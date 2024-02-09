@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'Screens/login.dart';
+import 'Screens/LoginScreen/login.dart';
 
 void main() {
   runApp(MyApp());

@@ -1,6 +1,5 @@
 name: supplychaintracking
 description: "A new Flutter project."
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -10,8 +9,14 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_map: ^6.1.0
-  mapbox_gl: ^0.16.0
-  flutter_launcher_icons: ^0.11.0
+  flutter_launcher_icons: ^0.13.1
+  latlong2: ^0.9.0
+  flutter_map_marker_cluster: ^1.3.4
+  url_launcher: ^6.0.0
+  geolocator: ^10.1.0
+  geocoding: ^2.0.0
+  http: ^1.2.0
+  flutter_mapbox_navigation: ^0.2.2
 
 
 
@@ -25,6 +30,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/maps/
+
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
@@ -35,3 +42,4 @@ flutter_launcher_icons:
     image_path: "assets/images/logo.png"
     background_color: "#hexcode"
     theme_color: "#hexcode"
+

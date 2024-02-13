@@ -1,12 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
     tools:overrideLibrary="com.mapbox.mapboxgl">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
     <application
         android:label="PGS Tracking"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
 
-        <meta-data android:name="mapbox_access_token" android:value="sk.eyJ1IjoibmFzcmVkZGluZTEyMzQiLCJhIjoiY2xzZGE5MDcwMHE1MTJrbzVhdjNpcXVtYSJ9.KmiLERK7bwZtVG58zjq0qA" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

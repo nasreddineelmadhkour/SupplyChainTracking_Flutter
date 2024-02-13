@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:supplychaintracking/Screens/MapScreen/mapBox.dart';
+import 'package:supplychaintracking/Screens/MapScreen/mapLeaflet.dart';
 import 'resetPassword.dart';
 import '../addDriver.dart';
 
@@ -27,7 +27,7 @@ class _LoginState extends State<Login> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ResetPassword(),
+        builder: (context) => MapLeafletWidget(),
       ),
     );
   }
@@ -45,7 +45,7 @@ class _LoginState extends State<Login> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MapboxWidget(),
+          builder: (context) => MapLeafletWidget(),
         ),
       );
     }

@@ -1,24 +1,41 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'Screens/LoginScreen/login.dart';
+import 'package:provider/provider.dart';
+import 'package:supplychaintracking/ViewModel/AccountViewModel.dart';
+import 'Views/LoginView/login.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AccountViewModel()),
+        // Add other providers if needed
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: MyApp(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Logo Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AccountViewModel()),
+      ],
+      child: MaterialApp(
+        title: 'Logo Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: SplashScreen(),
+        routes: {
+          '/login': (context) => Login(),
+        },
       ),
-      home: SplashScreen(),
-      routes: {
-        '/login': (context) => Login(),
-      },
     );
   }
 }
@@ -49,18 +66,16 @@ class _SplashScreenState extends State<SplashScreen>
     Timer(Duration(seconds: 2), () {
       _animationController.forward();
       Timer(Duration(milliseconds: 500), () {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                Login(),
+            pageBuilder: (context, animation, secondaryAnimation) => Login(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               var begin = Offset(1.0, 0.0);
               var end = Offset.zero;
               var curve = Curves.ease;
-              var tween = Tween(begin: begin, end: end)
-                  .chain(CurveTween(curve: curve));
+              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
               return SlideTransition(
                 position: animation.drive(tween),

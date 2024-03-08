@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:supplychaintracking/Screens/LoginScreen/newPassword.dart';
+import 'package:supplychaintracking/Views/LoginView/newPassword.dart';
 
 class CodeResetPassword extends StatefulWidget {
   @override

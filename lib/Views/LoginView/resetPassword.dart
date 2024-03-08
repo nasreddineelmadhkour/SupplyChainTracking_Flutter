@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:supplychaintracking/Screens/LoginScreen/codeResetPassword.dart';
-
+import 'package:supplychaintracking/Views/LoginView/codeResetPassword.dart';
 class ResetPassword extends StatefulWidget {
   @override
   _ResetPasswordState createState() => _ResetPasswordState();

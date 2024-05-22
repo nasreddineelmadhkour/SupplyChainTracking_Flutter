@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:supplychaintracking/Models/StaticMethode.dart';
 import 'package:supplychaintracking/Views/OrderView/widget/textField.dart';
+import 'package:supplychaintracking/Views/Widgets/colorTheme.dart';
 
 class AddOrderInfo1 extends StatefulWidget {
   @override
@@ -12,21 +13,38 @@ class AddOrderInfo1 extends StatefulWidget {
 class _AddOrderInfo1State extends State<AddOrderInfo1> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
-
-@override
-void initState() {
-    StaticMethode.staticOrder.weightOrders=0;
-    StaticMethode.staticOrder.productOrders="";
+  final TextEditingController _productController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
+  bool _productNotEmpty = true;
+  bool _timeNotEmpty = true;
+  bool _dateNotEmpty = true;
+  bool _weightNotEmpty = true;
+  @override
+  void initState() {
+    StaticMethode.staticOrder.weightOrders = 0;
+    StaticMethode.staticOrder.productOrders = "";
     print(StaticMethode.staticOrder.weightOrders);
     super.initState();
   }
+
+
+  bool _isAnyFieldEmpty() {
+    return _dateController.text.isEmpty ||
+        _timeController.text.isEmpty ||
+        _productController.text.isEmpty ||
+        _weightController.text.isEmpty
+    ;
+  }
+
   String dateOrder = "", timeOrder = "", concatDateTime = "";
   DateTime combinedDateTime = DateTime.now();
+  String _selectedUnit = "litre"; // Default unit is kg
 
   @override
   Widget build(BuildContext context) {
-
+    StaticMethode.staticOrder.unitProduct=_selectedUnit;
     return Container(
+      color: ColorTheme.colorBackgroundCard,
       padding: EdgeInsets.only(top: 15),
       child: Column(
         children: [
@@ -35,15 +53,18 @@ void initState() {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.teal),
-                    color: Colors.grey.withOpacity(.3),
+                    border: Border.all(color: _dateNotEmpty ? Colors.teal : Colors.red),
+                    color: Colors.grey.withOpacity(.1),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: TextFormField(
+                    style: TextStyle(color: ColorTheme.smalTitleColor),
                     controller: _dateController,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.date_range),
+                      prefixIcon: Icon(Icons.date_range,
+                          color: ColorTheme.smalTitleColor),
                       hintText: "Date",
+                      hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
                       border: OutlineInputBorder(borderSide: BorderSide.none),
                     ),
                     onTap: () => _setDateCommande(context),
@@ -56,15 +77,18 @@ void initState() {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.teal),
-                    color: Colors.grey.withOpacity(.3),
-                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: _timeNotEmpty ? Colors.teal : Colors.red),
+                    color: Colors.grey.withOpacity(.1),
+                    borderRadius: BorderRadius.circular(30),
                   ),
                   child: TextFormField(
+                    style: TextStyle(color: ColorTheme.smalTitleColor),
                     controller: _timeController,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.access_time_rounded),
+                      prefixIcon: Icon(Icons.access_time_rounded,
+                          color: ColorTheme.smalTitleColor),
                       hintText: "Time",
+                      hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
                       border: OutlineInputBorder(borderSide: BorderSide.none),
                     ),
                     onTap: () => _setTimeCommande(context),
@@ -80,58 +104,89 @@ void initState() {
           ),
           Container(
             decoration: BoxDecoration(
-                border: Border.all(color: Colors.teal),
-                color: Colors.grey.withOpacity(.3),
-                borderRadius: BorderRadius.circular(15)),
+                border: Border.all( color: _productNotEmpty ? Colors.teal : Colors.red),
+                color: Colors.grey.withOpacity(.1),
+                borderRadius: BorderRadius.circular(30)),
             child: TextFormField(
-              decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.production_quantity_limits_sharp),
+            controller: _productController,
+            decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.production_quantity_limits_sharp,
+                      color: ColorTheme.smalTitleColor),
                   hintText: "Product",
+                  hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
                   border: OutlineInputBorder(borderSide: BorderSide.none)),
-              onChanged: (value) => productController(value),
+              onChanged: (value)=>productController(value),
             ),
           ),
           SizedBox(
             height: 15,
           ),
           Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.teal),
-                  color: Colors.grey.withOpacity(.3),
-                  borderRadius: BorderRadius.circular(15)),
-              child: TextFormField(
-                onChanged: (value) => weightcontroller(value),
-                textAlign: TextAlign.left,
-                keyboardType:
-                    TextInputType.number, // Accepts only numeric input
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(
-                      RegExp(r'[0-9]')), // Only allow digits
-                ],
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(borderSide: BorderSide.none),
-                  prefixIcon: Icon(
-                    FontAwesomeIcons.weightHanging,
-                  ),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: _weightNotEmpty ? Colors.teal : Colors.red
+              ),
+              color: Colors.grey.withOpacity(.1),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _weightController,
 
-                  hintText: 'Weight',
-                  suffixIcon: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.0),
-                    child: Text(
-                      'kg',
-                      style: TextStyle(
-                        color: Colors.grey.shade800,
+                    onChanged: (value) => weightController(value),
+                    textAlign: TextAlign.left,
+                    keyboardType:
+                        TextInputType.number, // Accepts only numeric input
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'[0-9]')), // Only allow digits
+                    ],
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(borderSide: BorderSide.none),
+                      prefixIcon: Icon(
+                        FontAwesomeIcons.weightHanging,
+                        color: ColorTheme.smalTitleColor,
                       ),
+                      hintText: 'Weight',
+                      hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
                     ),
+
                   ),
                 ),
-              )),
+                DropdownButton<String>(
+                  value: _selectedUnit,
+                  padding: EdgeInsets.only(right: 20),
+                  style: TextStyle(color: ColorTheme.hintTitleColor),
+                  underline: Container(), // Remove the underline
+                  onChanged: (String? newValue) {
+                    StaticMethode.staticOrder.unitProduct=newValue.toString();
+                    print(StaticMethode.staticOrder.unitProduct);
+                    setState(() {
+
+                      _selectedUnit = newValue!;
+                    });
+                  },
+                  items: <String>["litre", 'kg'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
   Future<void> _setDateCommande(BuildContext context) async {
+
+    _dateNotEmpty = _dateController.text.isNotEmpty;
+verifForm();
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -163,6 +218,9 @@ void initState() {
   }
 
   Future<void> _setTimeCommande(BuildContext context) async {
+
+    _timeNotEmpty = _timeController.text.isNotEmpty;
+verifForm();
     TimeOfDay? pickedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
@@ -183,15 +241,57 @@ void initState() {
     }
   }
 
+
+  verifForm(){
+    setState(() {
+      _productNotEmpty = _productController.text.isNotEmpty;
+      _dateNotEmpty = _dateController.text.isNotEmpty;
+      _timeNotEmpty = _timeController.text.isNotEmpty;
+      _weightNotEmpty= _weightController.text.isNotEmpty;
+      // Display Snackbar if any field is empty
+      /*if (anyFieldEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Please fill all fields'),
+          ),
+        );
+      }*/
+    });
+  }
+
+
+
   productController(String value) {
-    StaticMethode.staticOrder.productOrders=value;
+
+    _productNotEmpty = value.isNotEmpty;
+
+    StaticMethode.staticOrder.productOrders = _productController.text;
+    verifForm();
     print(StaticMethode.staticOrder.productOrders);
-  }
-  weightcontroller(String value){
-    StaticMethode.staticOrder.weightOrders=int.parse(value);
-    print(StaticMethode.staticOrder.weightOrders
-    );
-  }
 
 
+
+  }
+
+  weightController(String value) {
+    _weightNotEmpty = value.isNotEmpty;
+
+    verifForm();
+    if(value.length>0){
+    StaticMethode.staticOrder.weightOrders = int.parse(value);
+    print(value);}
+    /*else
+      {
+      StaticMethode.staticOrder.weightOrders = 0;
+      setState(() {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text("* Weight > 0  "),
+          ),
+        );
+      });
+      }*/;
+  }
 }

@@ -1,80 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
 
-class AddDriverForm extends StatefulWidget {
+/*
+class StompClientExample extends StatefulWidget {
   @override
-  _AddDriverFormState createState() => _AddDriverFormState();
+  _StompClientExampleState createState() => _StompClientExampleState();
 }
 
-class _AddDriverFormState extends State<AddDriverForm> {
-  final _formKey = GlobalKey<FormState>();
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
+class _StompClientExampleState extends State<StompClientExample> {
+  final channel = IOWebSocketChannel.connect('ws://172.17.20.69:3000/chat-socket');
+  late StompClient stompClient;
 
   @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+
+    stompClient = StompClient(
+      config: StompConfig(
+          url: 'wss://172.17.20.69:3000/ws/app/chat/1',
+        onConnect: onConnect,
+        onWebSocketError: onWebSocketError,
+      ),
+    );
+    stompClient.activate();
+  }
+
+  void onConnect(StompFrame connectFrame) {
+    print('Connected to STOMP server');
+    stompClient.subscribe(destination: '/topic/1', callback: (StompFrame frame) {
+        print('Received message: ${frame.body}');
+      },
+    );
+  }
+
+  void onWebSocketError(dynamic error) {
+    print('WebSocket error: $error');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Driver'),
+        title: Text('STOMP Client Example'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Name',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the driver\'s name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the driver\'s email';
-                  }
-                  // You can add additional email validation logic here
-                  return null;
-                },
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Form is valid, perform desired action
-                    String name = _nameController.text;
-                    String email = _emailController.text;
-                    // TODO: Add driver to the database or perform other actions
-                    print('Name: $name, Email: $email');
-                  }
-                },
-                child: Text('Add Driver'),
-              ),
-            ],
-          ),
-        ),
+      body: Center(
+        child: Text('Listening for messages...'),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    stompClient.deactivate();
+    channel.sink.close();
+    super.dispose();
   }
 }
 
 void main() {
-  runApp(MaterialApp(home: AddDriverForm()));
+  runApp(MaterialApp(
+    home: StompClientExample(),
+  ));
 }
+*/

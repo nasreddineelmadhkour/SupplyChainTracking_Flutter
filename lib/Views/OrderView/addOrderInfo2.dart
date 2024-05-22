@@ -4,7 +4,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:supplychaintracking/Models/Driver.dart';
 import 'package:supplychaintracking/Models/StaticMethode.dart';
 import 'package:supplychaintracking/ViewModel/AccountViewModel.dart';
+import 'package:supplychaintracking/ViewModel/DriverViewModel.dart';
 import 'package:supplychaintracking/Views/OrderView/widget/textField.dart';
+import 'package:supplychaintracking/Views/Widgets/colorTheme.dart';
 
 class AddOrderInfo2 extends StatefulWidget {
   @override
@@ -12,11 +14,14 @@ class AddOrderInfo2 extends StatefulWidget {
 }
 
 class _AddOrderInfo2State extends State<AddOrderInfo2> {
-  AccountViewModel accountViewModel = AccountViewModel();
+  DriverViewModel driverViewModel = DriverViewModel();
   List<Driver> drivers = [];
   Driver? selectedDriver;
   TextEditingController serialNumberController = TextEditingController();
   TextEditingController cardNumberController = TextEditingController();
+
+  bool _nameNotEmpty = true;
+
 
   @override
   void initState() {
@@ -26,7 +31,7 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
 
   Future<void> _getDrivers() async {
     try {
-      List<Driver> fetchedDrivers = await accountViewModel.getDriverByCarrier();
+      List<Driver> fetchedDrivers = await driverViewModel.getDriverByCarrier();
       setState(() {
         drivers = fetchedDrivers;
       });
@@ -48,6 +53,7 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
       print(StaticMethode.staticOrder.driverNumber);
     }
     return Container(
+      color: ColorTheme.colorBackgroundCard,
       padding: EdgeInsets.only(top: 15),
       child: Column(
         children: [
@@ -61,6 +67,7 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
             },
             onSelected: (Driver selected) {
               setState(() {
+                _nameNotEmpty= selected.name.isNotEmpty;
                 selectedDriver = selected;
               });
             },
@@ -72,11 +79,17 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
             ) {
               return Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.teal),
+                  border: Border.all(color: _nameNotEmpty ? Colors.teal : Colors.red),
                   color: Colors.grey.withOpacity(.3),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: TextFormField(
+                  onChanged: (value)=>{
+                  setState((){
+
+                  }),
+                  _nameNotEmpty = value.isNotEmpty,
+                  },
                   controller: textEditingController,
                   focusNode: focusNode,
                   onFieldSubmitted: (value) {
@@ -85,8 +98,9 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
                   style:
                       TextStyle(fontSize: 16), // Adjust the font size as needed
                   decoration: InputDecoration(
-                    prefixIcon: Icon(FontAwesomeIcons.solidUser),
+                    prefixIcon: Icon(FontAwesomeIcons.solidUser,color: ColorTheme.smalTitleColor),
                     hintText: "Name",
+                    hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
                     border: OutlineInputBorder(borderSide: BorderSide.none),
                   ),
                 ),
@@ -105,8 +119,10 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
               readOnly: true,
               controller: serialNumberController,
               decoration: InputDecoration(
-                prefixIcon: Icon(FontAwesomeIcons.trailer),
+                prefixIcon: Icon(FontAwesomeIcons.trailer,color: ColorTheme.smalTitleColor),
                 hintText: "Serial Number",
+                hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
+
                 border: OutlineInputBorder(borderSide: BorderSide.none),
               ),
             ),
@@ -124,8 +140,10 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
               readOnly: true,
               controller: cardNumberController,
               decoration: InputDecoration(
-                prefixIcon: Icon(FontAwesomeIcons.solidIdCard),
+                prefixIcon: Icon(FontAwesomeIcons.solidIdCard,color: ColorTheme.smalTitleColor),
                 hintText: "Card Number",
+                hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
+
                 border: OutlineInputBorder(borderSide: BorderSide.none),
               ),
             ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supplychaintracking/Models/StaticAccount.dart';
+import 'package:supplychaintracking/ViewModel/AccountViewModel.dart';
 import 'dart:async';
 
 import 'package:supplychaintracking/Views/LoginView/codeResetPassword.dart';
@@ -12,6 +14,8 @@ class _ResetPasswordState extends State<ResetPassword> {
   final _emailPhoneController = TextEditingController();
   bool _isButtonDisabled = false;
   int _timerCountdown = 30;
+  final AccountViewModel accountViewModel = AccountViewModel();
+
 
   @override
   void dispose() {
@@ -21,7 +25,8 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   void _resetPassword() {
     if (_formKey.currentState?.validate() == true) {
-      // TODO: Implement password reset logic here
+
+      StaticAccount.staticAccount.phoneNumber=_emailPhoneController.text;
 
       // Clear the input field
       _emailPhoneController.clear();
@@ -30,11 +35,34 @@ class _ResetPasswordState extends State<ResetPassword> {
       startTimer();
 
       // Navigate to the codeResetPassword file after the timer stops
-      Timer(Duration(seconds: 5), () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => CodeResetPassword()),
-        );
+      Timer(Duration(seconds: 5), () async {
+        bool testFunct = await accountViewModel.SendCodeReset();
+        print(testFunct);
+        if (testFunct) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CodeResetPassword()),
+          );
+        } else {
+          // Show alert if accountViewModel.SendCodeReset() returns false
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Alert"),
+                content: Text("No account with this identity."),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("OK"),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       });
     }
   }

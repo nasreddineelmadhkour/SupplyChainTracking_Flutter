@@ -1,10 +1,22 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supplychaintracking/ChatPage.dart';
+import 'package:supplychaintracking/Models/StaticSettings.dart';
 import 'package:supplychaintracking/ViewModel/AccountViewModel.dart';
+import 'package:supplychaintracking/Views/SocketIOClient.dart';
+import 'package:supplychaintracking/Views/Widgets/colorTheme.dart';
+import 'package:supplychaintracking/Views/addDriver.dart';
+import 'package:web_socket_channel/io.dart';
 import 'Views/LoginView/login.dart';
 
 void main() {
+  /*final channel = IOWebSocketChannel.connect('ws://localhost:8080/ws');
+  channel.stream.listen((message) {
+    print('Received: $message');
+  }); */
+  //channel.sink.add('Hello, WebSocket!');
   runApp(
     MultiProvider(
       providers: [
@@ -33,7 +45,7 @@ class MyApp extends StatelessWidget {
         ),
         home: SplashScreen(),
         routes: {
-          '/login': (context) => Login(),
+          '/login': (context) => SocketIOClient(),
         },
       ),
     );
@@ -53,6 +65,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+    _loadSettings();
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 500),
@@ -88,6 +101,70 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
+  void _loadSettings() async {
+
+
+
+
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      ColorTheme.darkMode = prefs.getBool('darkMode') ?? false;
+      print("_darkMode :"+ ColorTheme.darkMode.toString());
+
+
+        StaticSettings.username = prefs.getString('username') ?? '';
+        StaticSettings.password = prefs.getString('password') ?? '';
+        print(prefs.getBool("rememberMe"));
+        
+        StaticSettings.rememberMe = prefs.getBool('rememberMe') ?? false;
+
+      print("Username:"+StaticSettings.username +" | Password:"+ StaticSettings.password + " |Remember Me:"+StaticSettings.rememberMe.toString());
+
+
+
+    });
+
+    if(ColorTheme.darkMode)
+    {
+      //DarkMod
+
+      ColorTheme.colorBackgroundCard=Color.fromRGBO(22,24, 37, 1);
+      ColorTheme.backgroundNormalColor = Color.fromRGBO(13, 16, 25, 1);
+      ColorTheme.colorIcon =Color.fromRGBO(49, 161, 139, 1);
+      ColorTheme.homeTopColor= Color.fromRGBO(26, 27, 47, 1);
+      ColorTheme.bigTitleColor = Color.fromRGBO(49, 161, 139, 1);
+      ColorTheme.hintTitleColor=Color.fromRGBO(120, 118, 131, 1);
+      ColorTheme.smalTitleColor = Color.fromRGBO(181, 183, 196, 1);
+      ColorTheme.titleAppBarColor = Color.fromRGBO(49, 161, 139, 1);
+      ColorTheme.appBarColor = Color.fromRGBO(22,24, 37, 1);
+      ColorTheme.appBarBigTitleColor = Color.fromRGBO(116, 118, 131, 1);
+
+
+      ColorTheme.mode=Colors.grey;
+    }
+    else{
+
+      //LightMod
+
+      ColorTheme.colorBackgroundCard=Color.fromRGBO(254, 254, 254, 1);
+      ColorTheme.backgroundNormalColor = Color.fromRGBO(250, 249, 254, 1);
+      ColorTheme.colorIcon = Color.fromRGBO(31, 48, 97, 1);
+      ColorTheme.homeTopColor=Color.fromRGBO(49, 161, 139, 1);
+      ColorTheme.bigTitleColor = Color.fromRGBO(31, 48, 97, 1);
+      ColorTheme.hintTitleColor=Color.fromRGBO(49, 161, 139, 1);
+      ColorTheme.smalTitleColor = Color.fromRGBO(31, 48, 97, 1);
+      ColorTheme.titleAppBarColor = Color.fromRGBO(250, 249, 254, 1);
+      ColorTheme.appBarColor = Color.fromRGBO(49, 161, 139, 1);
+      ColorTheme.appBarBigTitleColor = Color.fromRGBO(112, 115, 124, 1);
+
+
+      ColorTheme.mode=Colors.white;
+
+    }
+
+  }
+
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -97,6 +174,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorTheme.backgroundNormalColor,
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supplychaintracking/Models/StaticAccount.dart';
+import 'package:supplychaintracking/ViewModel/AccountViewModel.dart';
 import 'package:supplychaintracking/Views/LoginView/newPassword.dart';
 
 class CodeResetPassword extends StatefulWidget {
@@ -9,19 +11,43 @@ class CodeResetPassword extends StatefulWidget {
 class _CodeResetPasswordState extends State<CodeResetPassword> {
   final _formKey = GlobalKey<FormState>();
   final _codeController = TextEditingController();
+  AccountViewModel accountViewModel = AccountViewModel();
 
-  void _confirmCode(BuildContext context) {
+  Future<void> _confirmCode(BuildContext context) async {
     if (_formKey.currentState?.validate() == true) {
-      // TODO: Implement code confirmation logic here
 
+      StaticAccount.staticAccount.codeTel = _codeController.text;
       // Clear the code field
       _codeController.clear();
 
-      // Navigate to the NewPassword screen
+      bool testFunc= await accountViewModel.VerifyCode();
+
+      if(testFunc)
+      {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => NewPassword()),
-      );
+      );}
+      else
+        {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Alert"),
+                content: Text("Incorrect code."),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("OK"),
+                  ),
+                ],
+              );
+            },
+          );
+        }
     }
   }
 

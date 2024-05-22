@@ -13,6 +13,7 @@ import 'package:supplychaintracking/Services/MapLeafletService.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:supplychaintracking/ViewModel/MapOpenStreatViewModel.dart';
+import 'package:supplychaintracking/Views/Widgets/colorTheme.dart';
 
 class AddOrderInfo3 extends StatefulWidget {
   @override
@@ -27,6 +28,8 @@ class _AddOrderInfo3 extends State<AddOrderInfo3> with TickerProviderStateMixin 
 
   MapOpenStreatViewModel mapOpenStreatViewModel = MapOpenStreatViewModel();
 
+  bool _arrivalPointNotEmpty= true;
+  bool _startingPointNotEmpty =true;
 
   late TextEditingController _startingPointController = TextEditingController();
   late TextEditingController _arrivalPointController = TextEditingController();
@@ -57,161 +60,179 @@ class _AddOrderInfo3 extends State<AddOrderInfo3> with TickerProviderStateMixin 
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: 15),
-        Container(
-          decoration: BoxDecoration(
-              border: Border.all(color: Colors.teal),
-              color: Colors.grey.withOpacity(.3),
-              borderRadius: BorderRadius.circular(15)),
-          child: TextFormField(
-            controller: _searchController,
-            focusNode: _searchFocusNode,
-
-            decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: "Search",
-                border: OutlineInputBorder(borderSide: BorderSide.none)),
-            onFieldSubmitted: (value) => _searchAddress(value),
-            onChanged: (value) =>
-                _updateSearchResults(value), // Update this line
-          ),
-        ),
-        if (_searchFocusNode.hasFocus)
+    return
+      Container(
+        color: Colors.transparent,
+        child: Column(
+        children: [
+          SizedBox(height: 15),
           Container(
-            margin: EdgeInsets.only(),
-            child: Card(
-              elevation: 4,
-              color: Colors.white, // Set the background color to white
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: Colors.teal, width: 2.0),
-                borderRadius: BorderRadius.circular(20.0),
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.teal),
+                color: Colors.grey.withOpacity(.1),
+                borderRadius: BorderRadius.circular(15)),
+            child: TextFormField(
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              style: TextStyle(color: ColorTheme.smalTitleColor),
+
+              decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.search,color: ColorTheme.smalTitleColor),
+                  hintText: "Search",
+                  hintStyle:TextStyle(color: ColorTheme.smalTitleColor),
+
+                  border: OutlineInputBorder(borderSide: BorderSide.none)),
+              onFieldSubmitted: (value) => _searchAddress(value),
+              onChanged: (value) =>
+                  _updateSearchResults(value), // Update this line
+            ),
+          ),
+          if (_searchFocusNode.hasFocus)
+            Container(
+              margin: EdgeInsets.only(),
+              child: Card(
+                elevation: 4,
+                color: Colors.grey.withOpacity(.1), // Set the background color to white
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(color: Colors.teal, width: 1.0),
+                  borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (int i = 0; i < _mapLeaflet.searchResults.length; i++)
+                      Column(
+                        children: [
+                          ListTile(
+                            title: Text(_mapLeaflet.searchResults[i],style: TextStyle(color: ColorTheme.smalTitleColor),),
+                            onTap: () {
+                              _handleSearchResultTap(_mapLeaflet.searchResults[i]);
+                            },
+                          ),
+                          if (i < _mapLeaflet.searchResults.length - 1)
+                            Divider(height: 1, color: Colors.teal), // Add Divider between items
+                        ],
+                      ),
+                  ],
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+            ),
+
+          SizedBox(height: 5),
+          Container(
+            height: 600, // Adjust the height as needed
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: FlutterMap(
+                mapController: _mapLeaflet.mapController,
+                options: MapOptions(
+                  center: LatLng(34.0812055063, 9.417373468231718),
+                  zoom: 6.7,
+                  onLongPress: _handleTapOnMap,
+                ),
                 children: [
-                  for (int i = 0; i < _mapLeaflet.searchResults.length; i++)
-                    Column(
-                      children: [
-                        ListTile(
-                          title: Text(_mapLeaflet.searchResults[i]),
-                          onTap: () {
-                            _handleSearchResultTap(_mapLeaflet.searchResults[i]);
-                          },
-                        ),
-                        if (i < _mapLeaflet.searchResults.length - 1)
-                          Divider(height: 1, color: Colors.teal), // Add Divider between items
-                      ],
-                    ),
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+//                  subdomains: ['a', 'b', 'c'],
+                    additionalOptions: {
+                      'userAgent': 'com.example.app',
+                    },
+                  ),
+                  PolylineLayer(
+                    polylines: [
+                      Polyline(
+                        points: _mapLeaflet.routeCoordinates,
+                        color: Colors.blue,
+                        strokeWidth: 3.0,
+                      ),
+                    ],
+                  ),
+                  MarkerLayer(
+                    markers: _buildMarkers(),
+                  ),
                 ],
               ),
             ),
           ),
-
-        SizedBox(height: 5),
-        Container(
-          height: 600, // Adjust the height as needed
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: FlutterMap(
-              mapController: _mapLeaflet.mapController,
-              options: MapOptions(
-                center: LatLng(34.0812055063, 9.417373468231718),
-                zoom: 6.7,
-                onLongPress: _handleTapOnMap,
-              ),
+          Container(
+            color: Colors.transparent,
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 0.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,  // Center the content vertically
               children: [
-                TileLayer(
-                  urlTemplate: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png',
-//                  subdomains: ['a', 'b', 'c'],
-                  additionalOptions: {
-                    'userAgent': 'com.example.app',
-                  },
+                Icon(
+                  Icons.access_time, // Choose the appropriate icon
+                  color: Colors.green,
+                  size: 30,
                 ),
-                PolylineLayer(
-                  polylines: [
-                    Polyline(
-                      points: _mapLeaflet.routeCoordinates,
-                      color: Colors.blue,
-                      strokeWidth: 3.0,
-                    ),
-                  ],
+                SizedBox(width: 10), // Add some space between icon and text
+                Text(
+                  "${_mapLeaflet.durationString}",
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                MarkerLayer(
-                  markers: _buildMarkers(),
+
+                SizedBox(width: 10), // Add some space between icon and text
+
+                Text(
+                  "${_mapLeaflet.distanceString}",
+                  style: TextStyle(color: Colors.grey, fontSize: 20),
+                )
+                ,SizedBox(width: 10), // Add some space between icon and text
+                Icon(
+                  FontAwesomeIcons.truckMoving, // Choose the appropriate icon
+                  color: Colors.grey,
+                  size: 30,
                 ),
               ],
             ),
           ),
-        ),
-        Container(
-          color: Color.fromRGBO(255, 255, 255, 0.5),
-          height: 50,
-          padding: const EdgeInsets.symmetric(horizontal: 0.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,  // Center the content vertically
-            children: [
-              Icon(
-                Icons.access_time, // Choose the appropriate icon
-                color: Colors.green,
-                size: 30,
-              ),
-              SizedBox(width: 10), // Add some space between icon and text
-              Text(
-                "${_mapLeaflet.durationString}",
-                style: TextStyle(
-                  color: Colors.green,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+          Container(
+            decoration: BoxDecoration(
+                border: Border.all(color: _startingPointNotEmpty ? Colors.teal : Colors.red),
+                color: Colors.grey.withOpacity(.1),
+                borderRadius: BorderRadius.circular(15)),
+            child: TextFormField(
+              readOnly: true,
+              style: TextStyle(color: ColorTheme.smalTitleColor),
+              controller: _startingPointController,
+              decoration: InputDecoration(
+                  prefixIcon: Icon(FontAwesomeIcons.arrowRight,color: ColorTheme.smalTitleColor,),
+                  hintText: "Starting point",
+                  hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
+                  border: OutlineInputBorder(borderSide: BorderSide.none)),
+            ),
+          ),
+          SizedBox(height: 15),
+          Container(
+            decoration: BoxDecoration(
+                border: Border.all(color: _arrivalPointNotEmpty ? Colors.teal : Colors.red),
+                color: Colors.grey.withOpacity(.1),
+                borderRadius: BorderRadius.circular(15)),
+            child: TextFormField(
+              readOnly: true,
+              style: TextStyle(color: ColorTheme.smalTitleColor),
+              controller: _arrivalPointController,
+              decoration: InputDecoration(
+                  prefixIcon: Icon(FontAwesomeIcons.arrowLeft,color: ColorTheme.smalTitleColor),
+                  hintText: "Arrival point",
+                  hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
+                  border: OutlineInputBorder(borderSide: BorderSide.none)),
+            ),
+          ),
 
-              SizedBox(width: 10), // Add some space between icon and text
+          SizedBox(height: 15),
 
-              Text(
-                "${_mapLeaflet.distanceString}",
-                style: TextStyle(color: Colors.grey, fontSize: 20),
-              )
-              ,SizedBox(width: 10), // Add some space between icon and text
-              Icon(
-                FontAwesomeIcons.truckMoving, // Choose the appropriate icon
-                color: Colors.grey,
-                size: 30,
-              ),
-            ],
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-              border: Border.all(color: Colors.teal),
-              color: Colors.grey.withOpacity(.3),
-              borderRadius: BorderRadius.circular(15)),
-          child: TextFormField(
-            controller: _startingPointController,
-            decoration: InputDecoration(
-                prefixIcon: Icon(FontAwesomeIcons.arrowRight),
-                hintText: "Starting point",
-                border: OutlineInputBorder(borderSide: BorderSide.none)),
-          ),
-        ),
-        SizedBox(height: 15),
-        Container(
-          decoration: BoxDecoration(
-              border: Border.all(color: Colors.teal),
-              color: Colors.grey.withOpacity(.3),
-              borderRadius: BorderRadius.circular(15)),
-          child: TextFormField(
-            controller: _arrivalPointController,
-            decoration: InputDecoration(
-                prefixIcon: Icon(FontAwesomeIcons.arrowLeft),
-                hintText: "Arrival point",
-                border: OutlineInputBorder(borderSide: BorderSide.none)),
-          ),
-        ),
-        SizedBox(height: 15),
-      ],
-    );
+
+          SizedBox(height: 30),
+
+        ],
+      ),)
+      ;
   }
 
   List<Marker> _buildMarkers() {
@@ -258,11 +279,15 @@ class _AddOrderInfo3 extends State<AddOrderInfo3> with TickerProviderStateMixin 
                 _mapLeaflet.durationString = "";
                 _mapLeaflet.distanceString = "";
 
+
                 if(i==0){
 
 
                   _startingPointController.text=_arrivalPointController.text;
+                  StaticMethode.staticOrder.startingPoint = _arrivalPointController.text;
                   _arrivalPointController.text="";
+                  StaticMethode.staticOrder.arrivalPoint = "";
+
                   StaticMethode.staticOrder.startingLat=0;
                   StaticMethode.staticOrder.startingLong=0;
                   print("StartingPoint : Lat:"+ StaticMethode.staticOrder.startingLat.toString()+" Long: "+StaticMethode.staticOrder.startingLong.toString());
@@ -272,11 +297,18 @@ class _AddOrderInfo3 extends State<AddOrderInfo3> with TickerProviderStateMixin 
                  // _startingPointController.text=_arrivalPointController.text;
                   _arrivalPointController.text="";
 
+                  StaticMethode.staticOrder.arrivalPoint = "";
+
                   StaticMethode.staticOrder.arrivalLong=0;
                   StaticMethode.staticOrder.arrivalLat=0;
                   print("ArrivalPoint : Lat:"+ StaticMethode.staticOrder.arrivalLat.toString()+" Long: "+StaticMethode.staticOrder.arrivalLong.toString());
 
                 }
+
+                _arrivalPointNotEmpty = _arrivalPointController.text.isNotEmpty;
+                _startingPointNotEmpty = _startingPointController.text.isNotEmpty;
+
+
               });
             },
             child: i == 0
@@ -329,11 +361,16 @@ class _AddOrderInfo3 extends State<AddOrderInfo3> with TickerProviderStateMixin 
           _mapLeaflet.markerPositions.add(tappedPosition);
           if (fullAddress != "" && _mapLeaflet.markerPositions.length==1) {
             _startingPointController.text = fullAddress;
+            StaticMethode.staticOrder.startingPoint = fullAddress;
+
           }
           if (fullAddress != "" && _mapLeaflet.markerPositions.length==2) {
             _arrivalPointController.text = fullAddress;
+            StaticMethode.staticOrder.arrivalPoint = fullAddress;
             _getRouteCoordinates();
           }
+          _arrivalPointNotEmpty = _arrivalPointController.text.isNotEmpty;
+          _startingPointNotEmpty = _startingPointController.text.isNotEmpty;
         });
 /*
         if (_mapLeaflet.markerPositions.length == 2) {
@@ -349,7 +386,13 @@ class _AddOrderInfo3 extends State<AddOrderInfo3> with TickerProviderStateMixin 
         _mapLeaflet.durationString = "";
         _mapLeaflet.distanceString = "";
         _startingPointController.text = "";
+        StaticMethode.staticOrder.startingPoint = "";
+
         _arrivalPointController.text = "";
+        StaticMethode.staticOrder.arrivalPoint = "";
+
+        _arrivalPointNotEmpty = _arrivalPointController.text.isNotEmpty;
+        _startingPointNotEmpty = _startingPointController.text.isNotEmpty;
       });
       StaticMethode.staticOrder.distance = "";
       StaticMethode.staticOrder.estimation = "";
@@ -494,6 +537,8 @@ class _AddOrderInfo3 extends State<AddOrderInfo3> with TickerProviderStateMixin 
 
           setState(() {
             _startingPointController.text=fulladdress;
+            StaticMethode.staticOrder.startingPoint = fulladdress;
+
             _searchController.text = fulladdress;
             _searchFocusNode.unfocus();
             _mapLeaflet.markerPositions.clear();

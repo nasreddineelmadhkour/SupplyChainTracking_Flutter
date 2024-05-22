@@ -17,7 +17,8 @@ class Order {
   late double arrivalLat;
   late String estimation;
   late String distance;
-
+  late String unitProduct;
+  late String status;
   Order({
     required this.ordersNumber,
     required this.dateOrders,
@@ -34,6 +35,8 @@ class Order {
     required this.productOrders,
     required this.carrierNumber,
     required this.reclamationNumber,
+    required this.unitProduct,
+    required this.status
 
 });
 
@@ -54,9 +57,12 @@ class Order {
       startingLat: json['startingLat'],
       startingLong: json['startingLong'],
       startingPoint: json['startingPoint'],
+      unitProduct : json['unitProduct'],
+      status: json['status']
 
     );
   }
+
 
 
 }

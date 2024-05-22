@@ -1,10 +1,13 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:supplychaintracking/Models/StaticMethode.dart';
 
 class Account {
   late int userNumber;
   late String name;
   late String token;
-  late String photo;
+  final Uint8List photo;
   late String phoneNumber;
   late String codeTel;
   late String resetToken;
@@ -72,7 +75,7 @@ class Account {
       userNumber: json['userNumber'] ?? 0,
       name: json['name'] ?? '',
       token: json['token'] ?? '',
-      photo: json['photo'] ?? '',
+      photo: base64.decode(json['photo']),
       phoneNumber: json['phoneNumber'] ?? '',
       codeTel: json['codeTel'] ?? '',
       resetToken: json['resetToken'] ?? '',

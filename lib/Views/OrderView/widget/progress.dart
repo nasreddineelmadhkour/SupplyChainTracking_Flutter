@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supplychaintracking/Views/Widgets/colorTheme.dart';
 
 class PForm extends StatefulWidget {
   final List<Widget> pages;
@@ -87,6 +88,7 @@ class _PFormState extends State<PForm> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: ColorTheme.colorBackgroundCard,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: widget.pages.map(_buildPageContainer).toList(),
@@ -100,6 +102,7 @@ class _PFormState extends State<PForm> with TickerProviderStateMixin {
       children: [
         if (index != widget.pages.length - 1)
           Container(
+            color: ColorTheme.colorBackgroundCard,
             margin: EdgeInsets.only(left: 2, top: 37),
 
             child: SizeTransition(
@@ -145,6 +148,7 @@ class _PFormState extends State<PForm> with TickerProviderStateMixin {
             controlColor(index);
           },
           child: Container(
+
             width: 35,
             height: 35,
             decoration: BoxDecoration(
@@ -157,8 +161,9 @@ class _PFormState extends State<PForm> with TickerProviderStateMixin {
         ),
         SizedBox(width: 40),
         widget.title[index].copyWith(
-          activeColor: activeColor[index] ? widget.activeColor : Colors.black,
+          activeColor: activeColor[index] ? widget.activeColor : Color.fromRGBO(31, 48, 97, 1),
         ),
+
       ],
     );
   }
@@ -182,11 +187,11 @@ class PTitle extends StatelessWidget {
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.bold,
-            color: activeColor,
+            color: ColorTheme.bigTitleColor,
 
           ),
         ),
-        if (subTitle.isNotEmpty) Text(subTitle),
+        if (subTitle.isNotEmpty) Text(subTitle,style: TextStyle(color: ColorTheme.smalTitleColor),),
       ],
     );
   }

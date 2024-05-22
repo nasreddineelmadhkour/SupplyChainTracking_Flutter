@@ -25,7 +25,12 @@ dependencies:
   google_nav_bar: ^5.0.6
   shared_preferences: ^2.0.10
   intl: ^0.17.0
-
+  image_picker: ^0.8.4+4
+  path_provider: ^2.0.5
+  http_parser: ^4.0.0
+  socket_io_client: ^2.0.3+1
+  web_socket_channel: ^2.4.0
+  stomp_dart_client: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -40,6 +45,7 @@ flutter:
     - assets/images/img/
     - assets/images/
     - assets/images/maps/
+
 
 flutter_launcher_icons:
   android: "launcher_icon"

@@ -3,27 +3,30 @@ import 'package:flutter/services.dart';
 import 'package:supplychaintracking/Models/StaticAccount.dart';
 import 'package:supplychaintracking/Views/HomeView/gridviewHome.dart';
 import 'package:supplychaintracking/Views/OrderView/addOrder.dart';
+import 'package:supplychaintracking/Views/ProfileView/profile.dart';
+import 'package:supplychaintracking/Views/SettingView/settings.dart';
+import 'package:supplychaintracking/Views/Widgets/colorTheme.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class NavBar extends StatefulWidget {
+  const NavBar({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<NavBar> createState() => _NavBarState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _NavBarState extends State<NavBar> {
   int _selectedIndex = 0;
 
   DateTime? currentBackPressTime;
 
   final List<Widget> _pages = [
     FirstGrid(),
-    AddOrder(), // Replace with your Livraison content
+    Center(), // Replace with your Livraison content
     Center(
-      child: Text('Profile Content'),
+      child: Profile(),
     ),
     Center(
-      child: Text('Settings Content'),
+      child: Settings(),
     ),
   ];
 
@@ -47,25 +50,7 @@ class _HomePageState extends State<HomePage> {
         return false;
       },
       child: Scaffold(
-        /*
-        appBar: AppBar(
-
-          backgroundColor: Colors.teal,
-          actions: [
-            IconButton(
-              onPressed: () {
-                // Provider.of<AccountViewModel>(context, listen: false).logout();
-                Navigator.of(context).pop();
-                //Navigator.pop(
-                //  context, MaterialPageRoute(builder: (context) => Login()));
-              },
-              icon: Icon(Icons.logout),
-              iconSize: 30,
-              color: Color.fromRGBO(31, 48, 97, 1),
-              padding: EdgeInsets.symmetric(horizontal: 25),
-            ),
-          ],
-        ),*/
+        backgroundColor: ColorTheme.homeTopColor,
         body:
 
 
@@ -73,25 +58,30 @@ class _HomePageState extends State<HomePage> {
         bottomNavigationBar: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
+              backgroundColor:  ColorTheme.colorBackgroundCard,
               icon: Icon(Icons.home),
               label: 'Home',
             ),
             BottomNavigationBarItem(
+              backgroundColor: ColorTheme.colorBackgroundCard,
               icon: Icon(Icons.location_on_sharp),
               label: 'Livraison',
             ),
             BottomNavigationBarItem(
+              backgroundColor:  ColorTheme.colorBackgroundCard,
+
               icon: Icon(Icons.account_circle),
               label: 'Profile',
             ),
             BottomNavigationBarItem(
+              backgroundColor:  ColorTheme.colorBackgroundCard,
               icon: Icon(Icons.settings),
               label: 'Settings',
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Color.fromRGBO(31, 48, 97, 1),
-          unselectedItemColor: Colors.teal,
+          selectedItemColor: ColorTheme.IconNavBarSelected,
+          unselectedItemColor: ColorTheme.colorIconNav,
           onTap: _onItemTapped,
         ),
       ),
@@ -101,6 +91,17 @@ class _HomePageState extends State<HomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (_selectedIndex == 1) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddOrder()),
+        );
+      }/* else if (_selectedIndex == 3) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Settings()),
+        );
+      }*/
     });
   }
 }

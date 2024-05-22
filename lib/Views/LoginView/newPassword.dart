@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supplychaintracking/Models/StaticAccount.dart';
+import 'package:supplychaintracking/ViewModel/AccountViewModel.dart';
+import 'package:supplychaintracking/Views/LoginView/login.dart';
 
 class NewPassword extends StatefulWidget {
   @override
@@ -10,6 +13,7 @@ class _NewPasswordState extends State<NewPassword> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _showPassword = false;
+  AccountViewModel accountViewModel = AccountViewModel();
 
   @override
   void dispose() {
@@ -104,7 +108,7 @@ class _NewPasswordState extends State<NewPassword> {
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
                                           return 'Saisir votre nouveau mot de passe.';
-                                        } else if (value.length < 8) {
+                                        } else if (value.length < 2) {
                                           return 'Le mot de passe doit comporter au moins 8 caractères.';
                                         }
                                         return null;
@@ -183,9 +187,49 @@ class _NewPasswordState extends State<NewPassword> {
                             ),
                             SizedBox(height: 40),
                             GestureDetector(
-                              onTap: () {
+                              onTap: () async {
                                 if (_formKey.currentState != null && _formKey.currentState!.validate()) {
                                   // All validations pass
+
+                                  StaticAccount.staticAccount.password=_newPasswordController.text;
+                                  bool testFunc = await accountViewModel.ChangePasswordAfterVerification();
+                                  if (testFunc) {
+                                    // Show success message
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Mot de passe changé avec succès'),
+                                        duration: Duration(seconds: 3), // Display for 3 seconds
+                                      ),
+                                    );
+
+                                    // Delay navigation to the login page
+                                    Future.delayed(Duration(seconds: 3), () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => Login()), // Replace with your login page
+                                      );
+                                    });
+                                  }
+                                  else{
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text("Alert"),
+                                          content: Text("Problem in change password try again later."),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text("OK"),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
+
                                   // Add your code to reset the password here
                                 }
                               },

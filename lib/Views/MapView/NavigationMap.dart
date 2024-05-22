@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mapbox_navigation/flutter_mapbox_navigation.dart';
 import 'package:geolocator/geolocator.dart';
 
-class HomeScreen extends StatefulWidget {
+class NavigationScreen extends StatefulWidget {
+  final routeCoordinates ;
+  NavigationScreen(this.routeCoordinates);
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _NavigationScreenState createState() => _NavigationScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _NavigationScreenState extends State<NavigationScreen> {
   bool? _arrived;
   bool? _routeBuilt;
   bool? _isNavigating;

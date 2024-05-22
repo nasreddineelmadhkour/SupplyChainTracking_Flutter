@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supplychaintracking/Views/HomeView/homePage.dart';
+import 'package:supplychaintracking/Models/StaticAccount.dart';
+import 'package:supplychaintracking/Models/StaticSettings.dart';
+import 'package:supplychaintracking/Views/HomeView/navBar.dart';
 import 'package:supplychaintracking/ViewModel/AccountViewModel.dart';
 import 'package:supplychaintracking/Views/OrderView/addOrder.dart';
 import 'resetPassword.dart';
@@ -27,10 +29,10 @@ class _LoginState extends State<Login> {
 
   final _formKey = GlobalKey<FormState>();
   bool _showPassword = false;
-  bool _rememberMe = false ;
 
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _usernameController = TextEditingController(text: StaticSettings.username);
+  TextEditingController _passwordController = TextEditingController(text: StaticSettings.password);
+  bool _rememberMe = StaticSettings.rememberMe ;
 
 
   void _goToResetPassword() {
@@ -70,7 +72,7 @@ class _LoginState extends State<Login> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => NavBar(),
           ),
         );
       } else {
@@ -101,18 +103,8 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-    _loadSavedCredentials();
   }
 
-  void _loadSavedCredentials() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _usernameController.text = prefs.getString('username') ?? '';
-    _passwordController.text = prefs.getString('password') ?? '';
-    print(prefs.getBool("rememberMe"));
-    _rememberMe = prefs.getBool('rememberMe') ?? false;
-    print(_rememberMe);
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -283,6 +275,7 @@ class _LoginState extends State<Login> {
                                   value: viewModel.rememberMe,
                                   onChanged: (value) {
                                     setState(() {
+                                      StaticSettings.rememberMe = value ?? false;
                                       viewModel.rememberMe = value ?? false;
                                       _rememberMe = viewModel.rememberMe;
                                     });

@@ -108,6 +108,8 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height+40;
+    double width = MediaQuery.of(context).size.width;
     final viewModel = Provider.of<AccountViewModel>(context);
     if(_usernameController.text !="" ) {
       setState(() {
@@ -123,6 +125,7 @@ class _LoginState extends State<Login> {
 
     return Scaffold(
       body: Container(
+
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -143,6 +146,7 @@ class _LoginState extends State<Login> {
                 child: Column(
                   children: <Widget>[
                     Column(
+
                       children: <Widget>[
                         Image.asset(
                           'assets/images/logo.png',
@@ -170,6 +174,7 @@ class _LoginState extends State<Login> {
               ),
               SizedBox(height: 20),
               Container(
+                height: height+11.4,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(

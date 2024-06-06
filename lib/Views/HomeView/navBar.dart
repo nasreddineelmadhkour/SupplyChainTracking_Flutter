@@ -20,7 +20,7 @@ class _NavBarState extends State<NavBar> {
   DateTime? currentBackPressTime;
 
   final List<Widget> _pages = [
-    FirstGrid(),
+    HomePage(),
     Center(), // Replace with your Livraison content
     Center(
       child: Profile(),

@@ -202,7 +202,6 @@ class _ListOrdersForDriverState extends State<ListOrdersForDriver> {
           //SizedBox(height: 10), // Add space of height 10
           //SizedBox(height: 20), // Add space of height 10
           SizedBox(height: 10), // Add space of height 10
-
           if(ordersToday.isNotEmpty)
           Visibility(
             visible: pageOrderToday!=0,
@@ -328,7 +327,7 @@ class _ListOrdersForDriverState extends State<ListOrdersForDriver> {
                                         MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            ordersToday[index]['driver']['name'],
+                                            "",
                                             style: TextStyle(color: Colors.teal),
                                           ),
                                           if (ordersToday[index]['status']
@@ -475,7 +474,6 @@ class _ListOrdersForDriverState extends State<ListOrdersForDriver> {
               ),
             ),
           SizedBox(height: 10), // Add space of height 10
-
           Container(
             width: width / 1.05,
             margin: EdgeInsets.only(right: 15, left: 15),
@@ -622,7 +620,7 @@ class _ListOrdersForDriverState extends State<ListOrdersForDriver> {
                                   MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      orders[index]['driver']['name'],
+                                      "",
                                       style: TextStyle(color: Colors.teal),
                                     ),
                                     if (orders[index]['status'].toString() ==

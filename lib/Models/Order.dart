@@ -19,6 +19,9 @@ class Order {
   late String distance;
   late String unitProduct;
   late String status;
+
+  late double ordersNowLat;
+  late double ordersNowLong;
   Order({
     required this.ordersNumber,
     required this.dateOrders,
@@ -36,7 +39,9 @@ class Order {
     required this.carrierNumber,
     required this.reclamationNumber,
     required this.unitProduct,
-    required this.status
+    required this.status,
+    required this.ordersNowLat,
+    required this.ordersNowLong
 
 });
 
@@ -58,7 +63,9 @@ class Order {
       startingLong: json['startingLong'],
       startingPoint: json['startingPoint'],
       unitProduct : json['unitProduct'],
-      status: json['status']
+      status: json['status'],
+      ordersNowLat: json['ordersNowLat'],
+      ordersNowLong: json['ordersNowLong'],
 
     );
   }

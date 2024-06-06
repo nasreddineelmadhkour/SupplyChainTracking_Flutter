@@ -181,5 +181,42 @@ class OrderViewModel extends ChangeNotifier {
   }
 
 
+  Future<bool> startingOrders(int idOrders)async{
+
+    final String apiUrl = BaseURL.baseURL + '/orders/startingOrders/${idOrders}';
+
+    try{
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${StaticAccount.staticAccount.token}',
+        },
+      );
+      if (response.statusCode == 200) {
+        print('POST /startingOrders  response.status:${response.statusCode}');
+
+        return true;
+      } else {
+        print(apiUrl);
+        print('POST /startingOrders  response.status: ${response.statusCode}');
+        return false;
+      }
+
+    }
+    catch(error){
+      print("Error startingOrders Orders $error");
+      throw Exception('Failed startingOrders Orders');
+
+    }
+
+  }
+
+
+
+
+
+
+
 
 }

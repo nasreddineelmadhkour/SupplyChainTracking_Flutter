@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_mapbox_navigation/flutter_mapbox_navigation.dart';
@@ -9,10 +8,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 import 'package:supplychaintracking/Models/MapLeaflet.dart';
+import 'package:supplychaintracking/Network/BaseURL.dart';
 import 'package:supplychaintracking/ViewModel/OrderViewModel.dart';
-import 'package:supplychaintracking/Views/MapView/NavigationMap.dart';
 import 'package:supplychaintracking/Views/Widgets/LineEditdiv2.dart';
 import 'package:supplychaintracking/Views/Widgets/colorTheme.dart';
 import 'package:supplychaintracking/Views/Widgets/line_edit.dart';
@@ -27,6 +27,9 @@ class DetailsOrderForDriver extends StatefulWidget {
 
 class _DetailsOrderForDriverState extends State<DetailsOrderForDriver>
     with SingleTickerProviderStateMixin {
+
+  late StompClient _stompClient; // Declare as late
+
   MapLeaflet _mapLeaflet = MapLeaflet();
   MapController _mapController = MapController();
 
@@ -44,17 +47,21 @@ class _DetailsOrderForDriverState extends State<DetailsOrderForDriver>
   TextEditingController statusController = TextEditingController(text: '');
 
   List<Marker> _markers = [];
+  List<String> messages = [];
+  List<dynamic> ordersTracking = [];
 
-  bool? _arrived;
-  bool? _routeBuilt;
   bool? _isNavigating;
-  String? _instruction;
   Position? _currentPosition;
-  double _distanceRemaining = 0.0;
-  double _durationRemaining = 0.0;
-  bool _isMultipleStop = false;
-  dynamic _controller;
   StreamSubscription<Position>? _positionStreamSubscription;
+
+  OrderViewModel orderViewModel = OrderViewModel();
+
+
+
+  late Timer _timer;
+
+
+
 
   @override
   void initState() {
@@ -76,6 +83,8 @@ class _DetailsOrderForDriverState extends State<DetailsOrderForDriver>
     _mapLeaflet.routeCoordinates
         .add(LatLng(widget.order['arrivalLat'], widget.order['arrivalLong']));
 
+
+
     // Define initial markers
     _markers.addAll([
       Marker(
@@ -83,25 +92,118 @@ class _DetailsOrderForDriverState extends State<DetailsOrderForDriver>
         height: 80.0,
         point:
             LatLng(widget.order['startingLat'], widget.order['startingLong']),
-        child: Image.asset("assets/images/maps/Pick_destination.png"),
+        child: 
+        Column(children: [
+          Image.asset("assets/images/maps/Pick_destination.png"),
+          Text("Start",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,
+              backgroundColor: Color.fromRGBO(255, 255, 255, 0.5)),)
+        ],)
       ),
       Marker(
         width: 80.0,
         height: 80.0,
         point: LatLng(widget.order['arrivalLat'], widget.order['arrivalLong']),
-        child: Image.asset("assets/images/maps/Pick_arrival.png"),
+        child: Column(children: [
+          Image.asset("assets/images/maps/Pick_arrival.png"),
+          Text("Arrival",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,
+              backgroundColor: Color.fromRGBO(255, 255, 255, 0.5)),)
+        ],),
       ),
     ]);
 
     // Fetch route coordinates
     _getRouteCoordinates();
-
     _startListeningToLocationUpdates();
+    _connectToWebSocket();
+
+
+    _startRealTimeMessaging();
+
+  }
+
+
+
+  void _connectToWebSocket() {
+    _stompClient =
+        StompClient(
+          config: StompConfig(
+            url: BaseURL.baseURL_WS,
+            onConnect: _onConnect,
+            onStompError: (error) {
+              print('STOMP Error occurred: $error');
+            },
+            onWebSocketError: (error) {
+              print('WebSocket Error occurred: $error');
+            },
+          ),
+        );
+
+    _stompClient.activate();
+  }
+
+
+  void _onConnect(StompFrame frame) {
+    print("connected");
+    _stompClient.subscribe(
+      destination: '/setPosition/${widget.order['ordersNumber']}', // Update with your subscription topic
+      callback: (frame) {
+        Map<String, dynamic> result = json.decode(frame.body!);  // Add null check with '!'
+        //setState(() {
+        messages.add(result['message']);
+        //});
+      },
+    );
+  }
+
+  Future<void> _sendMessage(String message) async {
+   // print(message);
+    if (_stompClient.connected) {
+      final LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        await Geolocator.requestPermission();
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+
+    //  print("Real Position : latitude"+position.latitude.toString() +" longitude"+ position.longitude.toString());
+      if (widget.order['ordersNumber'].toString().isNotEmpty) {
+        _stompClient.send(
+          destination: '/app/getPosition/${widget.order['ordersNumber']}', // Update with your destination
+          body: json.encode({'idOrders':widget.order['ordersNumber'],
+          'ordersNowLat' : position.latitude,
+            'ordersNowLong' : position.longitude
+          }),
+        );
+       // _controller.clear();
+      }
+      else{
+        print("non value hello");
+
+      }
+    } else {
+      print('WebSocket connection is not established.');
+      // You can attempt to reconnect here or display an error message to the user.
+    }
+  }
+
+
+  void _startRealTimeMessaging() {
+
+    _timer = Timer.periodic(Duration(seconds: 2), (timer) {
+      String message = "Real-time message at ${DateTime.now()}";
+      if(widget.order['status']=="IN_PROGRESS")
+      _sendMessage(message);
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
+    _stompClient.deactivate();
+    _timer.cancel();
     _positionStreamSubscription?.cancel();
   }
 
@@ -178,7 +280,8 @@ class _DetailsOrderForDriverState extends State<DetailsOrderForDriver>
           },
         ),
       ),
-      body: Stack(
+      body:
+      Stack(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -314,8 +417,14 @@ class _DetailsOrderForDriverState extends State<DetailsOrderForDriver>
         width: 150, // set your desired width
         child: FloatingActionButton(
           backgroundColor: Colors.teal,
-          onPressed: () {
-            _getCurrentLocationAndStartNavigation(context);
+          onPressed: () async {
+            if(await orderViewModel.startingOrders(widget.order['ordersNumber']))
+              {
+                _getCurrentLocationAndStartNavigation(context);
+                setState(() {
+                  widget.order['status']="IN_PROGRESS";
+                });
+              }
 
             // Start the animation to the starting position
           },
@@ -396,7 +505,7 @@ class _DetailsOrderForDriverState extends State<DetailsOrderForDriver>
         wayPoints: [Myposition, destination],
         options: MapBoxOptions(
           voiceInstructionsEnabled: false,
-          mapStyleUrlNight: "mapbox://styles/mapbox/navigation-night-v1",
+          //mapStyleUrlNight: "mapbox://styles/mapbox/navigation-night-v1",
         ));
 /*
     await MapBoxNavigation.instance?.startFreeDrive(

@@ -7,7 +7,7 @@ class Account {
   late int userNumber;
   late String name;
   late String token;
-  final Uint8List photo;
+  late Uint8List photo;
   late String phoneNumber;
   late String codeTel;
   late String resetToken;

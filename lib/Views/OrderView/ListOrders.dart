@@ -190,6 +190,7 @@ class _ListOrdersState extends State<ListOrders> {
         onPressed: () {
           // Navigate to a screen to add a new driver
           // Replace `AddDriverScreen` with the screen where you add a new driver
+          Navigator.of(context).pop();
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => AddOrder()));
         },
@@ -311,7 +312,7 @@ class _ListOrdersState extends State<ListOrders> {
                                             " " +
                                             ordersToday[index]['dateOrders']
                                                 .toString()
-                                                .substring(12, 16),
+                                                .substring(11, 16),
                                         style: TextStyle(
                                             color: ColorTheme.smalTitleColor,
                                             fontWeight: FontWeight.bold,
@@ -521,13 +522,17 @@ class _ListOrdersState extends State<ListOrders> {
 
                                           GestureDetector(
                                               onTap: () =>
+                                              {
 
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            TrackingOrders(ordersToday[index])), // Navigate to ListDrivers screen
-                                                  )
+                                                Navigator.pop(context),
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          TrackingOrders(
+                                                              ordersToday[index])), // Navigate to ListDrivers screen
+                                                )
+                                              }
                                             ,
                                               child: Container(
                                                 width: width/1.4,
@@ -565,6 +570,7 @@ class _ListOrdersState extends State<ListOrders> {
                                     color: ColorTheme.smalTitleColor,
                                   ),
                                   onTap: () {
+                                    Navigator.pop(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -678,7 +684,7 @@ class _ListOrdersState extends State<ListOrders> {
                                         " " +
                                         orders[index]['dateOrders']
                                             .toString()
-                                            .substring(12, 16),
+                                            .substring(11, 16),
                                     style: TextStyle(
                                         color: ColorTheme.smalTitleColor,
                                         fontWeight: FontWeight.bold,
@@ -867,6 +873,7 @@ class _ListOrdersState extends State<ListOrders> {
                                 color: ColorTheme.smalTitleColor,
                               ),
                               onTap: () {
+                                Navigator.pop(context);
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -920,6 +927,7 @@ class _ListOrdersState extends State<ListOrders> {
                 return GridTile(
                     child: GestureDetector(
                   onTap: () {
+                    Navigator.pop(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -1092,6 +1100,7 @@ class OrderSearchDelegate extends SearchDelegate<dynamic> {
                         trailing: Icon(Icons.arrow_forward_ios,
                             color: ColorTheme.smalTitleColor),
                         onTap: () {
+                          Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -1161,12 +1170,280 @@ class OrderSearchDelegate extends SearchDelegate<dynamic> {
                 SizedBox(width: 16), // Add spacing between image and ListTile
                 Expanded(
                   child: ListTile(
-                    title: Text(filteredOrders[index]['dateOrders'],
-                        style: TextStyle(color: ColorTheme.smalTitleColor)),
-                    subtitle: Text(filteredOrders[index]['arrivalPoint']),
-                    trailing: Icon(Icons.arrow_forward_ios,
-                        color: ColorTheme.smalTitleColor),
+                    title: Row(
+                      mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          filteredOrders[index]['productOrders'],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: ColorTheme.smalTitleColor,
+                              fontSize: 20),
+                        ),
+                        Text(
+                          filteredOrders[index]['dateOrders']
+                              .toString()
+                              .substring(0, 10) +
+                              " " +
+                              filteredOrders[index]['dateOrders']
+                                  .toString()
+                                  .substring(11, 16),
+                          style: TextStyle(
+                              color: ColorTheme.smalTitleColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14),
+                        ),
+                      ],
+                    ),
+                    subtitle: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(FontAwesomeIcons.arrowUp,
+                                    size: 10),
+                                if (filteredOrders[index]
+                                ['startingPoint']
+                                    .toString()
+                                    .length >
+                                    18)
+                                  Text(
+                                      " " +
+                                          filteredOrders[index][
+                                          'startingPoint']
+                                              .toString()
+                                              .substring(0, 18) +
+                                          "...",
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey)),
+                                if (filteredOrders[index]
+                                ['startingPoint']
+                                    .toString()
+                                    .length <=
+                                    18)
+                                  Text(
+                                      " " +
+                                          filteredOrders[index][
+                                          'startingPoint']
+                                              .toString(),
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey)),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(FontAwesomeIcons.arrowDown,
+                                    size: 10),
+                                if (filteredOrders[index]
+                                ['arrivalPoint']
+                                    .toString()
+                                    .length >
+                                    18)
+                                  Text(
+                                      " " +
+                                          filteredOrders[index]
+                                          ['arrivalPoint']
+                                              .toString()
+                                              .substring(0, 18) +
+                                          "...",
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey)),
+                                if (filteredOrders[index]
+                                ['arrivalPoint']
+                                    .toString()
+                                    .length <=
+                                    18)
+                                  Text(
+                                      " " +
+                                          filteredOrders[index]
+                                          ['arrivalPoint']
+                                              .toString()
+                                              .toString(),
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey)),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              filteredOrders[index]['driver']
+                              ['name'],
+                              style:
+                              TextStyle(color: Colors.teal),
+                            ),
+                            if (filteredOrders[index]['status']
+                                .toString() ==
+                                "IN_PROGRESS")
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    "IN PROGRESS" + " ",
+                                    style: TextStyle(
+                                        color: Colors.green,
+                                        fontSize: 10,
+                                        fontWeight:
+                                        FontWeight.bold),
+                                  ),
+                                  Icon(Icons.schedule_send,
+                                      color: Colors.green,
+                                      size: 15),
+                                ],
+                              ),
+                            if (filteredOrders[index]['status']
+                                .toString() ==
+                                "PENDING")
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    filteredOrders[index]['status'] +
+                                        " ",
+                                    style: TextStyle(
+                                        color: Colors.orange,
+                                        fontSize: 10,
+                                        fontWeight:
+                                        FontWeight.bold),
+                                  ),
+                                  Icon(Icons.pending,
+                                      color: Colors.orange,
+                                      size: 15),
+                                ],
+                              ),
+                            if (filteredOrders[index]['status']
+                                .toString() ==
+                                "COMPLETED")
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    filteredOrders[index]['status'] +
+                                        " ",
+                                    style: TextStyle(
+                                        color: Colors.teal,
+                                        fontSize: 10,
+                                        fontWeight:
+                                        FontWeight.bold),
+                                  ),
+                                  Icon(Icons.verified,
+                                      color: Colors.teal,
+                                      size: 15),
+                                ],
+                              ),
+                            if (filteredOrders[index]['status']
+                                .toString() ==
+                                "CANCELED")
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    filteredOrders[index]['status'] +
+                                        " ",
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 10,
+                                        fontWeight:
+                                        FontWeight.bold),
+                                  ),
+                                  Icon(Icons.cancel_rounded,
+                                      color: Colors.red,
+                                      size: 15),
+                                ],
+                              ),
+                            if (filteredOrders[index]['status']
+                                .toString() ==
+                                "DELAYED")
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    filteredOrders[index]['status'] +
+                                        " ",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 10,
+                                        fontWeight:
+                                        FontWeight.bold),
+                                  ),
+                                  Icon(
+                                      Icons
+                                          .replay_circle_filled_sharp,
+                                      color: Colors.grey,
+                                      size: 15),
+                                ],
+                              ),
+                          ],
+                        ),
+                        if (filteredOrders[index]['status'] == "IN_PROGRESS")
+                          SizedBox(height: 10,),
+                        if (filteredOrders[index]['status'] == "IN_PROGRESS")
+
+                          GestureDetector(
+                            onTap: () =>
+{
+                                Navigator.pop(context),
+                            Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          TrackingOrders(filteredOrders[index])), // Navigate to ListDrivers screen
+                                )}
+                            ,
+                            child: Container(
+                              width: 160,
+                              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                              decoration: BoxDecoration(
+                                color: ColorTheme.bigTitleColor,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Tracking now",
+                                    style: TextStyle(
+                                      color: ColorTheme.ListOrder,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8.0), // Add some space between text and icon
+                                  Icon(
+                                    Icons.emergency_share_sharp,
+                                    color: ColorTheme.ListOrder,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        if (filteredOrders[index]['status'] == "IN_PROGRESS")
+                          SizedBox(height: 10,),
+                      ],
+                      mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                    ),
+                    leading: Icon(
+                      Icons.arrow_forward_ios,
+                      color: ColorTheme.smalTitleColor,
+                    ),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -1210,4 +1487,5 @@ class OrderSearchDelegate extends SearchDelegate<dynamic> {
       ),
     );
   }
+
 }

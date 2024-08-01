@@ -4,6 +4,7 @@ import 'package:supplychaintracking/Models/StaticAccount.dart';
 import 'package:supplychaintracking/Models/StaticMethode.dart';
 import 'package:supplychaintracking/ViewModel/OrderViewModel.dart';
 import 'package:supplychaintracking/Views/HomeView/navBar.dart';
+import 'package:supplychaintracking/Views/OrderView/ListOrders.dart';
 import 'package:supplychaintracking/Views/OrderView/addOrderInfo1.dart';
 import 'package:supplychaintracking/Views/OrderView/addOrderInfo3.dart';
 import 'package:supplychaintracking/Views/OrderView/addOrderInfo2.dart';
@@ -42,6 +43,11 @@ class _AddOrderState extends State<AddOrder> {
             iconSize: 30,
             onPressed: () {
               Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ListOrders()),
+              );
+
             },
           ),
         ),
@@ -328,15 +334,17 @@ class _AddOrderState extends State<AddOrder> {
                     style: TextStyle(fontSize: 15),
                   )
                 ],
+
               ),
             ),
           );
           // Delay for 2 seconds to let the SnackBar finish displaying
           Future.delayed(Duration(seconds: 2), () {
             // Navigate to another page
+            Navigator.of(context).pop();
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => NavBar()),
+              MaterialPageRoute(builder: (context) => ListOrders()),
             );
 
             // Reset order details

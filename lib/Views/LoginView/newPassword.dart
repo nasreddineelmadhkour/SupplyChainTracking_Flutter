@@ -66,7 +66,7 @@ class _NewPasswordState extends State<NewPassword> {
                         SizedBox(height: 10),
                         Center(
                           child: Text(
-                            "Changer votre mot de passe",
+                            "Change your password",
                             style: TextStyle(color: Colors.white, fontSize: 15),
                           ),
                         ),
@@ -107,15 +107,15 @@ class _NewPasswordState extends State<NewPassword> {
                                       controller: _newPasswordController,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Saisir votre nouveau mot de passe.';
+                                          return 'Enter your new password.';
                                         } else if (value.length < 2) {
-                                          return 'Le mot de passe doit comporter au moins 8 caractères.';
+                                          return 'The password must be at least 8 characters long.';
                                         }
                                         return null;
                                       },
                                       obscureText: !_showPassword,
                                       decoration: InputDecoration(
-                                        hintText: "Nouveau mot de passe",
+                                        hintText: "New password",
                                         hintStyle: TextStyle(color: Colors.grey),
                                         border: InputBorder.none,
                                         suffixIcon: IconButton(
@@ -156,15 +156,15 @@ class _NewPasswordState extends State<NewPassword> {
                                         controller: _confirmPasswordController,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
-                                            return 'Confirmez votre mot de passe.';
+                                            return 'Confirm your password.';
                                           } else if (value != _newPasswordController.text) {
-                                            return 'Les mots de passe ne correspondent pas.';
+                                            return 'Passwords do not match.';
                                           }
                                           return null;
                                         },
                                         obscureText: !_showPassword,
                                         decoration: InputDecoration(
-                                          hintText: "Confirmer le mot de passe",
+                                          hintText: "Confirm the password",
                                           hintStyle: TextStyle(color: Colors.grey),
                                           border: InputBorder.none,
                                           suffixIcon: IconButton(
@@ -197,7 +197,7 @@ class _NewPasswordState extends State<NewPassword> {
                                     // Show success message
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('Mot de passe changé avec succès'),
+                                        content: Text('Password successfully changed'),
                                         duration: Duration(seconds: 3), // Display for 3 seconds
                                       ),
                                     );

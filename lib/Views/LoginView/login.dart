@@ -81,9 +81,9 @@ class _LoginState extends State<Login> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Erreur de connexion'),
+              title: Text('Connection error'),
               content: Text(
-                'Veuillez vérifier votre nom d\'utilisateur ou mot de passe.',
+                'Please check your phone number or password.',
               ),
               actions: <Widget>[
                 TextButton(
@@ -207,16 +207,16 @@ class _LoginState extends State<Login> {
                                   controller: viewModel.usernameController,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Veuillez saisir votre email ou téléphone.';
+                                      return 'Please enter your phone number.';
                                     }
                                     if (value.length < 2) {
-                                      return 'L\'email ou le téléphone doit contenir au moins 8 caractères.';
+                                      return 'The phone number must be at least 8 characters long.';
                                     }
                                     _usernameController=viewModel.usernameController;
                                     return null;
                                   },
                                   decoration: InputDecoration(
-                                    hintText: "E-mail or Phone",
+                                    hintText: "Phone Number",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none,
                                   ),
@@ -234,10 +234,10 @@ class _LoginState extends State<Login> {
                                   obscureText: !_showPassword,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Veuillez saisir votre mot de passe.';
+                                      return 'Please enter your password.';
                                     }
                                     if (value.length < 2) {
-                                      return 'Le mot de passe doit contenir au moins 6 caractères.';
+                                      return 'The password must be at least 6 characters long.';
                                     }
                                     _passwordController=viewModel.passwordController;
                                     return null;

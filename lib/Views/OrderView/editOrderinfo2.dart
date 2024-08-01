@@ -8,12 +8,15 @@ import 'package:supplychaintracking/ViewModel/DriverViewModel.dart';
 import 'package:supplychaintracking/Views/OrderView/widget/textField.dart';
 import 'package:supplychaintracking/Views/Widgets/colorTheme.dart';
 
-class AddOrderInfo2 extends StatefulWidget {
+class EditOrderInfo2 extends StatefulWidget {
+  final dynamic order;
+  EditOrderInfo2(this.order);
+
   @override
-  _AddOrderInfo2State createState() => _AddOrderInfo2State();
+  _EditOrderInfo2State createState() => _EditOrderInfo2State();
 }
 
-class _AddOrderInfo2State extends State<AddOrderInfo2> {
+class _EditOrderInfo2State extends State<EditOrderInfo2> {
   DriverViewModel driverViewModel = DriverViewModel();
   List<Driver> drivers = [];
   Driver? selectedDriver;
@@ -21,7 +24,6 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
   TextEditingController cardNumberController = TextEditingController();
 
   bool _nameNotEmpty = true;
-
 
   @override
   void initState() {
@@ -34,6 +36,12 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
       List<Driver> fetchedDrivers = await driverViewModel.getDriverByCarrier();
       setState(() {
         drivers = fetchedDrivers;
+        int driverNumber = widget.order['driver']['userNumber'];
+        print(widget.order);
+        selectedDriver = drivers.firstWhere(
+              (driver) => driver.userNumber == driverNumber,
+        //  orElse: () => null,
+        );
       });
     } catch (error) {
       print('Error fetching drivers: $error');
@@ -43,14 +51,10 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
   @override
   Widget build(BuildContext context) {
     if (selectedDriver != null) {
+
       serialNumberController.text = selectedDriver!.serialNumber.toString();
-    }
-    if(selectedDriver != null) {
       cardNumberController.text = selectedDriver!.cardNumber.toString();
-    }
-    if(selectedDriver != null) {
       StaticMethode.staticOrder.driverNumber = selectedDriver!.userNumber;
-      print(StaticMethode.staticOrder.driverNumber);
     }
     return Container(
       color: ColorTheme.colorBackgroundCard,
@@ -61,22 +65,22 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
             optionsBuilder: (TextEditingValue textEditingValue) {
               return drivers
                   .where((driver) => driver.name
-                      .toLowerCase()
-                      .contains(textEditingValue.text.toLowerCase()))
+                  .toLowerCase()
+                  .contains(textEditingValue.text.toLowerCase()))
                   .toList();
             },
             onSelected: (Driver selected) {
               setState(() {
-                _nameNotEmpty= selected.name.isNotEmpty;
+                _nameNotEmpty = selected.name.isNotEmpty;
                 selectedDriver = selected;
               });
             },
             fieldViewBuilder: (
-              BuildContext context,
-              TextEditingController textEditingController,
-              FocusNode focusNode,
-              VoidCallback onFieldSubmitted,
-            ) {
+                BuildContext context,
+                TextEditingController textEditingController ,
+                FocusNode focusNode,
+                VoidCallback onFieldSubmitted,
+                ) {
               return Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: _nameNotEmpty ? Colors.teal : Colors.red),
@@ -85,23 +89,25 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
                 ),
                 child: TextFormField(
 
-                  onChanged: (value)=>{
-                  setState((){
-
-                  }),
-                  _nameNotEmpty = value.isNotEmpty,
+                  onChanged: (value) {
+                    setState(() {
+                      _nameNotEmpty = value.isNotEmpty;
+                    });
                   },
                   controller: textEditingController,
                   focusNode: focusNode,
+
                   onFieldSubmitted: (value) {
                     onFieldSubmitted();
                   },
-
                   style: TextStyle(color: ColorTheme.principalTeal),
 
                   decoration: InputDecoration(
-                    prefixIcon: Icon(FontAwesomeIcons.solidUser,color: ColorTheme.smalTitleColor),
+
+                    prefixIcon: Icon(FontAwesomeIcons.solidUser, color: ColorTheme.smalTitleColor),
                     hintText: "Name",
+                    labelText: selectedDriver!.name,
+                    labelStyle: TextStyle(color: ColorTheme.principalTeal),
                     hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
                     border: OutlineInputBorder(borderSide: BorderSide.none),
                   ),
@@ -110,7 +116,6 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
             },
             displayStringForOption: (Driver driver) => driver.name,
           ),
-
           SizedBox(height: 15),
           Container(
             decoration: BoxDecoration(
@@ -119,22 +124,17 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
                 borderRadius: BorderRadius.circular(15)),
             child: TextFormField(
               style: TextStyle(color: ColorTheme.principalTeal),
-
               readOnly: true,
               controller: serialNumberController,
               decoration: InputDecoration(
-                prefixIcon: Icon(FontAwesomeIcons.trailer,color: ColorTheme.smalTitleColor),
+                prefixIcon: Icon(FontAwesomeIcons.trailer, color: ColorTheme.smalTitleColor),
                 hintText: "Serial Number",
                 hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
-
                 border: OutlineInputBorder(borderSide: BorderSide.none),
               ),
             ),
           ),
-
-          SizedBox(
-            height: 15,
-          ),
+          SizedBox(height: 15),
           Container(
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.teal),
@@ -142,22 +142,17 @@ class _AddOrderInfo2State extends State<AddOrderInfo2> {
                 borderRadius: BorderRadius.circular(15)),
             child: TextFormField(
               style: TextStyle(color: ColorTheme.principalTeal),
-
               readOnly: true,
               controller: cardNumberController,
               decoration: InputDecoration(
-                prefixIcon: Icon(FontAwesomeIcons.solidIdCard,color: ColorTheme.smalTitleColor),
+                prefixIcon: Icon(FontAwesomeIcons.solidIdCard, color: ColorTheme.smalTitleColor),
                 hintText: "Card Number",
                 hintStyle: TextStyle(color: ColorTheme.smalTitleColor),
-
                 border: OutlineInputBorder(borderSide: BorderSide.none),
               ),
             ),
           ),
-
-          SizedBox(
-            height: 15,
-          ),
+          SizedBox(height: 15),
           // Add your other widgets here
         ],
       ),

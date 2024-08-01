@@ -79,6 +79,12 @@ class _AddDriverState extends State<AddDriver> {
             color: ColorTheme.titleAppBarColor,
             onPressed: () {
               Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ListDrivers()), // Navigate to ListDrivers screen
+              );
             },
           ),
         ),
@@ -440,6 +446,13 @@ class _AddDriverState extends State<AddDriver> {
                         MaterialPageRoute(
                             builder: (context) =>
                                 ListDrivers()), // Navigate to ListDrivers screen
+                      );
+                    }
+                    else{
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Driver Exist'),
+                        ),
                       );
                     }
                   }

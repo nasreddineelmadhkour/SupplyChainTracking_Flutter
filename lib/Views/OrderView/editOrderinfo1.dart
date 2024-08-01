@@ -5,12 +5,16 @@ import 'package:supplychaintracking/Models/StaticMethode.dart';
 import 'package:supplychaintracking/Views/OrderView/widget/textField.dart';
 import 'package:supplychaintracking/Views/Widgets/colorTheme.dart';
 
-class AddOrderInfo1 extends StatefulWidget {
+class EditOrderInfo1 extends StatefulWidget {
+  final dynamic order;
+  EditOrderInfo1(this.order);
+
+
   @override
-  _AddOrderInfo1State createState() => _AddOrderInfo1State();
+  _EditOrderInfo1State createState() => _EditOrderInfo1State();
 }
 
-class _AddOrderInfo1State extends State<AddOrderInfo1> {
+class _EditOrderInfo1State extends State<EditOrderInfo1> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _productController = TextEditingController();
@@ -19,11 +23,27 @@ class _AddOrderInfo1State extends State<AddOrderInfo1> {
   bool _timeNotEmpty = true;
   bool _dateNotEmpty = true;
   bool _weightNotEmpty = true;
+  String _selectedUnit = "litre" ;// Default unit is kg
   @override
   void initState() {
-    StaticMethode.staticOrder.weightOrders = 0;
-    StaticMethode.staticOrder.productOrders = "";
-    print(StaticMethode.staticOrder.weightOrders);
+
+    _dateController.text=widget.order['dateOrders'].toString().substring(0,10);
+    _timeController.text=widget.order['dateOrders'].toString().substring(11,16);
+    _productController.text=widget.order['productOrders'];
+
+    _weightController.text=widget.order['weightOrders'].toString();
+
+    _selectedUnit = widget.order['unitProduct'];
+
+    concatDateTime = widget.order['dateOrders'].toString().substring(0,10)+" "+widget.order['dateOrders'].toString().substring(11,16)+":00";
+
+    StaticMethode.staticOrder.productOrders = widget.order['productOrders'];
+    StaticMethode.staticOrder.weightOrders = widget.order['weightOrders'];
+    StaticMethode.staticOrder.dateOrders = DateTime.parse(concatDateTime);
+
+
+
+    ///StaticMethode.staticOrder.dateOrders=DateTime(2000,1,1);
     super.initState();
   }
 
@@ -38,7 +58,6 @@ class _AddOrderInfo1State extends State<AddOrderInfo1> {
 
   String dateOrder = "", timeOrder = "", concatDateTime = "";
   DateTime combinedDateTime = DateTime.now();
-  String _selectedUnit = "litre"; // Default unit is kg
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +137,7 @@ class _AddOrderInfo1State extends State<AddOrderInfo1> {
               cursorColor: ColorTheme.principalTeal,
 
               controller: _productController,
-            decoration: InputDecoration(
+              decoration: InputDecoration(
                   prefixIcon: Icon(Icons.production_quantity_limits_sharp,
                       color: ColorTheme.smalTitleColor),
                   hintText: "Product",
@@ -133,7 +152,7 @@ class _AddOrderInfo1State extends State<AddOrderInfo1> {
           Container(
             decoration: BoxDecoration(
               border: Border.all(
-                color: _weightNotEmpty ? Colors.teal : Colors.red
+                  color: _weightNotEmpty ? Colors.teal : Colors.red
               ),
               color: Colors.grey.withOpacity(.1),
               borderRadius: BorderRadius.circular(30),
@@ -149,7 +168,7 @@ class _AddOrderInfo1State extends State<AddOrderInfo1> {
                     onChanged: (value) => weightController(value),
                     textAlign: TextAlign.left,
                     keyboardType:
-                        TextInputType.number, // Accepts only numeric input
+                    TextInputType.number, // Accepts only numeric input
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.allow(
                           RegExp(r'[0-9]')), // Only allow digits
@@ -179,7 +198,7 @@ class _AddOrderInfo1State extends State<AddOrderInfo1> {
                       _selectedUnit = newValue!;
                     });
                   },
-                  items: <String>["litre", 'kg'].map((String value) {
+                  items: <String>["litre", "kg"].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -197,7 +216,7 @@ class _AddOrderInfo1State extends State<AddOrderInfo1> {
   Future<void> _setDateCommande(BuildContext context) async {
 
     _dateNotEmpty = _dateController.text.isNotEmpty;
-verifForm();
+    verifForm();
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -210,13 +229,14 @@ verifForm();
       int month = pickedDate.month;
       int day = pickedDate.day;
       dateOrder =
-          '$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
+      '$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
 
       if (timeOrder.length > 4) {
         concatDateTime = "$dateOrder $timeOrder:00";
         StaticMethode.staticOrder.dateOrders = DateTime.parse(concatDateTime);
       } else {
-        concatDateTime = dateOrder;
+        concatDateTime = dateOrder +" "+widget.order['dateOrders'].toString().substring(11,16)+":00";
+        StaticMethode.staticOrder.dateOrders = DateTime.parse(concatDateTime);
       }
       setState(() {
         _dateController.text = pickedDate.year.toString() +
@@ -231,7 +251,7 @@ verifForm();
   Future<void> _setTimeCommande(BuildContext context) async {
 
     _timeNotEmpty = _timeController.text.isNotEmpty;
-verifForm();
+    verifForm();
     TimeOfDay? pickedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
@@ -240,9 +260,13 @@ verifForm();
       int hour = pickedTime.hour;
       int minute = pickedTime.minute;
       timeOrder =
-          '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+      '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
       if (dateOrder.length > 6) {
         concatDateTime = "$dateOrder $timeOrder:00";
+        StaticMethode.staticOrder.dateOrders = DateTime.parse(concatDateTime);
+      }
+      else{
+        concatDateTime = widget.order['dateOrders'].toString().substring(0,10) +" $timeOrder:00";
         StaticMethode.staticOrder.dateOrders = DateTime.parse(concatDateTime);
       }
       setState(() {
@@ -290,8 +314,8 @@ verifForm();
 
     verifForm();
     if(value.length>0){
-    StaticMethode.staticOrder.weightOrders = int.parse(value);
-    print(value);}
+      StaticMethode.staticOrder.weightOrders = int.parse(value);
+      print(value);}
     /*else
       {
       StaticMethode.staticOrder.weightOrders = 0;

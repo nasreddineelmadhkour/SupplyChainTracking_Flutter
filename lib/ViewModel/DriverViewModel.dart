@@ -1,19 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:supplychaintracking/Models/Driver.dart';
 import 'package:supplychaintracking/Models/ImageUpload.dart';
-import 'dart:typed_data';
-
 import 'package:supplychaintracking/Models/StaticAccount.dart';
 import 'package:supplychaintracking/Network/BaseURL.dart';
 import 'package:http/http.dart' as http;
-
-
 
 class DriverViewModel extends ChangeNotifier{
 
@@ -49,7 +41,6 @@ class DriverViewModel extends ChangeNotifier{
       throw Exception('Failed to load drivers');
     }
   }
-
 
   Future<bool> addDriver(Driver driver, ImageUpload image) async {
     try {
@@ -94,9 +85,14 @@ class DriverViewModel extends ChangeNotifier{
       var responseData = await response.stream.bytesToString();
       var jsonResponse = json.decode(responseData);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         return true; // Success
-      } else {
+      } else if (response.statusCode == 409)
+        {
+          return false ;
+        }
+      else
+      {
         throw Exception('Failed to add driver');
       }
     } catch (e) {
@@ -137,5 +133,49 @@ class DriverViewModel extends ChangeNotifier{
     }
 
   }
+
+
+  Future<int> updateDriverByCarrier(String name , String email , String phoneNumber , String cardNumber , String serialNumber , int idDriver , String password , String isP) async {
+
+    final String apiUrl = BaseURL.baseURL+'/account/updateDriverByCarrier/${idDriver}/${isP}';
+    try {
+      String token = StaticAccount.staticAccount.token.toString();
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'phoneNumber': phoneNumber,
+          'cardNumber': cardNumber,
+          'serialNumber': serialNumber,
+          'password': password,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        //StaticAccount.staticAccount=Account.fromJson(json.decode(response.body));
+        print('Update driver successful');
+        notifyListeners();
+        return 200;
+      } else if (response.statusCode == 409){
+        print('Update driver failed. Status code: ${response.statusCode}');
+        return 409;
+      }
+      else if (response.statusCode == 208)
+      {
+          return 208;
+      }
+      else{
+        return 500;
+      }
+    } catch (error) {
+      print('Error during update driver: $error');
+      return 500;
+    }
+  }
+
 
 }

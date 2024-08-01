@@ -8,6 +8,8 @@ import 'package:supplychaintracking/Models/MapLeaflet.dart';
 import 'package:supplychaintracking/Models/StaticAccount.dart';
 import 'package:supplychaintracking/Models/GridOrder.dart';
 import 'package:supplychaintracking/ViewModel/OrderViewModel.dart';
+import 'package:supplychaintracking/Views/ClaimView/listClaims.dart';
+import 'package:supplychaintracking/Views/ClaimView/listClaimsForDriver.dart';
 import 'package:supplychaintracking/Views/DriverView/ListDrivers.dart';
 import 'package:supplychaintracking/Views/OrderView/DetailsOrder.dart';
 import 'package:supplychaintracking/Views/OrderView/ListOrders.dart';
@@ -62,8 +64,23 @@ class _HomePageState extends State<HomePage> {
     {
       'icon': Icons.bus_alert,
       'name': 'Claims',
-      'onTap': () {
-        print('Claims tapped');
+      'onTap': (context) {
+        if (StaticAccount.staticAccount.role == "CARRIER") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    ListClaims()), // Navigate to ListDrivers screen
+          );
+        }
+        if (StaticAccount.staticAccount.role == "DRIVER") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    ListClaimsForDriver()), // Navigate to ListDrivers screen
+          );
+        }
       },
       'backgroundColor': ColorTheme.backgroundNormalColor,
     },

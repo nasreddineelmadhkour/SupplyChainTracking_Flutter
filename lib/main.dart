@@ -3,8 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supplychaintracking/ChatPage.dart';
+import 'package:supplychaintracking/Models/Order.dart';
 import 'package:supplychaintracking/Models/StaticSettings.dart';
 import 'package:supplychaintracking/ViewModel/AccountViewModel.dart';
+import 'package:supplychaintracking/Views/ClaimView/addClaim.dart';
+import 'package:supplychaintracking/Views/ClaimView/listClaims.dart';
+import 'package:supplychaintracking/Views/DriverView/ListDrivers.dart';
+import 'package:supplychaintracking/Views/HomeView/navBar.dart';
+import 'package:supplychaintracking/Views/OrderView/DetailsOrderForDriver.dart';
+import 'package:supplychaintracking/Views/OrderView/ListOrders.dart';
+import 'package:supplychaintracking/Views/OrderView/ListOrdersForDriver.dart';
 import 'package:supplychaintracking/Views/SocketIOClient.dart';
 import 'package:supplychaintracking/Views/Widgets/colorTheme.dart';
 import 'package:supplychaintracking/Views/addDriver.dart';
@@ -35,17 +43,34 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
+
       providers: [
         ChangeNotifierProvider(create: (_) => AccountViewModel()),
       ],
+
       child: MaterialApp(
-        title: 'Logo Demo',
+        debugShowCheckedModeBanner: false,  // Désactive le texte "Debug"
+
+        title: 'PGS Tracking',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
         home: SplashScreen(),
         routes: {
-          '/login': (context) => SocketIOClient(),
+          '/login': (context) => SplashScreen(),
+          '/home':(context) => NavBar(),
+
+          //'/home':(context) => NavBar(),
+          '/addClaim' : (context) => AddClaim(ModalRoute.of(context)!.settings.arguments as dynamic),
+          '/detailsOrderForDriver' : (context) => DetailsOrderForDriver(ModalRoute.of(context)!.settings.arguments as dynamic),
+          '/listClaims' : (context) => ListClaims(),
+          '/listClaimsForDriver' : (context) => ListClaims(),
+          '/listOrders' : (context) => ListOrders(),
+          '/listDrivers' : (context) => ListDrivers(),
+
+          //'/listOrdersForDriver' : (context) => ListOrdersForDriver(),
+
+
         },
       ),
     );

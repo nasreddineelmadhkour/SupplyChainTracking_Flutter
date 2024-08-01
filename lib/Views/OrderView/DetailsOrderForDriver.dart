@@ -279,6 +279,17 @@ class _DetailsOrderForDriverState extends State<DetailsOrderForDriver>
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          if( ( widget.order['status']=="IN_PROGRESS" || widget.order['status']=="PENDING" ) && widget.order['reclamation'].toString()=="null")
+          IconButton(
+            icon: Icon(Icons.bus_alert),
+            color: ColorTheme.titleAppBarColor,
+            onPressed: () {
+              //Navigator.pop(context);
+              Navigator.popAndPushNamed(context, '/addClaim',arguments: widget.order);
+            },
+          ),
+        ],
       ),
       body:
       Stack(
@@ -309,20 +320,20 @@ class _DetailsOrderForDriverState extends State<DetailsOrderForDriver>
                           textAlign: TextAlign.left,
                         ),
                         SizedBox(height: 20),
-                        if (widget.order['status'] == 'COMPLETED')
+                        if (widget.order['status'] == 'COMPLETED' && widget.order['dateFinOrders'] != null)
                           LineEditdiv2(
                             title: dateOrdersController.text.substring(0, 10) +
                                 " " +
                                 dateOrdersController.text.substring(11, 16),
                             icon: Icons.calendar_month,
                             readOnly: true,
-                            title2: dateOrdersController.text.substring(0, 10) +
+                            title2: widget.order['dateFinOrders'].substring(0, 10) +
                                 " " +
-                                dateOrdersController.text.substring(11, 16),
+                                widget.order['dateFinOrders'].substring(11, 16),
                             icon2: Icons.calendar_month,
                             readOnly2: true,
                           ),
-                        if (widget.order['status'] != 'COMPLETED')
+                        if (widget.order['status'] != 'COMPLETED' || widget.order['dateFinOrders'] == null)
                           LineEditdiv2(
                             title: dateOrdersController.text.substring(0, 10) +
                                 " " +
@@ -413,35 +424,105 @@ class _DetailsOrderForDriverState extends State<DetailsOrderForDriver>
           ),
         ],
       ),
-      floatingActionButton: Container(
-        width: 150, // set your desired width
+      floatingActionButton: widget.order['status'] == 'IN_PROGRESS'
+          ?
+
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 150,
+            child: FloatingActionButton(
+              backgroundColor: Colors.teal,
+              onPressed: () async {
+                await _showConfirmationDialog();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    "COMPLETED",
+                    style: TextStyle(
+                      color: ColorTheme.backgroundNormalColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Icon(Icons.check, color: ColorTheme.backgroundNormalColor),
+                ],
+              ),
+            ),
+
+          ),
+          SizedBox(width: 20),
+          Container(
+            width: 100,
+            child:           FloatingActionButton(
+              backgroundColor: Colors.blue,
+              onPressed: () {
+                _getCurrentLocationAndStartNavigation(context);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    "WAY",
+                    style: TextStyle(
+                      color: ColorTheme.backgroundNormalColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Icon(Icons.directions, color: ColorTheme.backgroundNormalColor),
+                ],
+              ),
+            ),
+          ),
+
+
+        ],
+      )
+          : Container(
+        width: 150,
         child: FloatingActionButton(
           backgroundColor: Colors.teal,
           onPressed: () async {
-            if(await orderViewModel.startingOrders(widget.order['ordersNumber']))
-              {
-                _getCurrentLocationAndStartNavigation(context);
-                setState(() {
-                  widget.order['status']="IN_PROGRESS";
-                });
-              }
-
-            // Start the animation to the starting position
+            if (await orderViewModel.startingOrders(widget.order['ordersNumber']) &&
+                widget.order['status'] == 'PENDING') {
+              //_getCurrentLocationAndStartNavigation(context);
+              setState(() {
+                widget.order['status'] = 'IN_PROGRESS';
+              });
+            }
+            print("start");
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(
-                "START",
-                style: TextStyle(
+              if (widget.order['status'] == 'PENDING')
+                Text(
+                  "START",
+                  style: TextStyle(
                     color: ColorTheme.backgroundNormalColor,
-                    fontWeight: FontWeight.bold),
-              ),
-              Icon(Icons.play_arrow, color: ColorTheme.backgroundNormalColor),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              if (widget.order['status'] == 'PENDING')
+                Icon(Icons.play_arrow, color: ColorTheme.backgroundNormalColor),
+
+              if (widget.order['status'] == 'COMPLETED')
+                Text(
+                  "COMPLETED",
+                  style: TextStyle(
+                    color: ColorTheme.backgroundNormalColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              if (widget.order['status'] == 'COMPLETED')
+                Icon(Icons.verified, color: ColorTheme.backgroundNormalColor),
             ],
           ),
         ),
       ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
@@ -463,6 +544,46 @@ class _DetailsOrderForDriverState extends State<DetailsOrderForDriver>
       });
     });
   }
+
+
+  Future<void> _showConfirmationDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button to dismiss the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Completion'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to mark this order as completed?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Confirm'),
+              onPressed: () async {
+                if (await orderViewModel.completedOrders(widget.order['ordersNumber'])) {
+                  setState(() {
+                    widget.order['status'] = 'COMPLETED';
+                  });                }
+
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   Future<void> _getCurrentLocationAndStartNavigation(
       BuildContext context) async {

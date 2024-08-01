@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 import 'package:supplychaintracking/Models/MapLeaflet.dart';
-import 'package:supplychaintracking/Services/MapLeafletService.dart';
 
 class MapLeafletWidget extends StatefulWidget {
   @override
@@ -22,7 +17,6 @@ class MapLeafletWidget extends StatefulWidget {
 class _MapLeafletWidgetState extends State<MapLeafletWidget>
     with TickerProviderStateMixin {
   MapLeaflet _mapLeaflet = MapLeaflet();
-  MapLeafletService _mapLeafletService = MapLeafletService();
 
   List<String> _searchResults = [];
 

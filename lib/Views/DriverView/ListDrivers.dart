@@ -108,6 +108,7 @@ class _ListDriversState extends State<ListDrivers> {
         onPressed: () {
           // Navigate to a screen to add a new driver
           // Replace `AddDriverScreen` with the screen where you add a new driver
+          Navigator.of(context).pop();
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => AddDriver()));
         },
@@ -180,6 +181,8 @@ class _ListDriversState extends State<ListDrivers> {
                                 color: ColorTheme.smalTitleColor,
                               ),
                               onTap: () {
+                                Navigator.pop(context);
+
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -232,6 +235,7 @@ class _ListDriversState extends State<ListDrivers> {
                   return GridTile(
                       child: GestureDetector(
                         onTap: () {
+                          Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -404,6 +408,7 @@ class DriverSearchDelegate extends SearchDelegate<Driver> {
                         trailing: Icon(Icons.arrow_forward_ios,
                             color: ColorTheme.smalTitleColor),
                         onTap: () {
+                          Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -478,6 +483,7 @@ class DriverSearchDelegate extends SearchDelegate<Driver> {
                     trailing: Icon(Icons.arrow_forward_ios,
                         color: ColorTheme.smalTitleColor),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.push(
                         context,
                         MaterialPageRoute(

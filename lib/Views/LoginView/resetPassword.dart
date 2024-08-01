@@ -131,7 +131,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                         SizedBox(height: 10),
                         Center(
                           child: Text(
-                            "Réinitialiser mot de passe",
+                            "Reset password",
                             style: TextStyle(color: Colors.white, fontSize: 15),
                           ),
                         ),
@@ -172,11 +172,11 @@ class _ResetPasswordState extends State<ResetPassword> {
                                       controller: _emailPhoneController,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Veuillez saisir votre email ou téléphone.';
+                                          return 'Please enter your email or phone number.';
                                         }
                                       },
                                       decoration: InputDecoration(
-                                        hintText: "E-mail ou Téléphone",
+                                        hintText: "Phone number",
                                         hintStyle: TextStyle(color: Colors.grey),
                                         border: InputBorder.none,
                                       ),
@@ -197,7 +197,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    _isButtonDisabled ? '$_timerCountdown' : 'Envoyer',
+                                    _isButtonDisabled ? '$_timerCountdown' : 'Send',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,

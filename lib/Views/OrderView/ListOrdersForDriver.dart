@@ -240,7 +240,7 @@ class _ListOrdersForDriverState extends State<ListOrdersForDriver> {
                                             " " +
                                             ordersToday[index]['dateOrders']
                                                 .toString()
-                                                .substring(12, 16),
+                                                .substring(11, 16),
                                         style: TextStyle(
                                             color: ColorTheme.smalTitleColor,
                                             fontWeight: FontWeight.bold,
@@ -501,7 +501,8 @@ class _ListOrdersForDriverState extends State<ListOrdersForDriver> {
             ),
           ),
           SizedBox(height: 10), // Add space of height 10
-          Visibility(
+          if(orders.isNotEmpty)
+            Visibility(
             visible: pageOther!=0,
 
             child:
@@ -537,7 +538,7 @@ class _ListOrdersForDriverState extends State<ListOrdersForDriver> {
                                       " " +
                                       orders[index]['dateOrders']
                                           .toString()
-                                          .substring(12, 16),
+                                          .substring(11, 16),
                                   style: TextStyle(
                                       color: ColorTheme.smalTitleColor,
                                       fontWeight: FontWeight.bold,
@@ -735,6 +736,31 @@ class _ListOrdersForDriverState extends State<ListOrdersForDriver> {
             ),
           ),
           ),
+          if(orders.isEmpty)
+            Visibility(
+              visible: pageOther != 0,
+              child: Container(
+                height: height / 5,
+                child: Card(
+                  margin: EdgeInsets.only(left: 20, right: 15, bottom: 5),
+                  color: ColorTheme.colorBackgroundCard,
+                  child: Center(
+                    child: ListTile(
+                      title: Center(
+                        child: Text(
+                          "EMPTY",
+                          style: TextStyle(
+                            color: ColorTheme.smalTitleColor,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
            // Add space of height 10
           SizedBox(height: height / 12), // Add space of height 10
         ],

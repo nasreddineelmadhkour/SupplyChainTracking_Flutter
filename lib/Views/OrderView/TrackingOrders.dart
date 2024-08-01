@@ -84,7 +84,7 @@ class TrackingOrdersState extends State<TrackingOrders>{
 
   }
   void _startMarkerUpdateTimer() {
-    _timer = Timer.periodic(Duration(seconds: 5), (Timer t) => _updateMarker());
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer t) => _updateMarker());
   }
 
   void _updateMarker() {

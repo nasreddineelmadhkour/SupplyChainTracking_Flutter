@@ -210,7 +210,7 @@ class AccountViewModel extends ChangeNotifier {
   }
 
 
-  Future<bool> updateProfile(ImageUpload image , String name , String phone,String password,String email
+  Future<int> updateProfile(ImageUpload image , String name , String phone,String password,String email
 
       ,bool isPhoto,bool isName,bool isPhone, bool isPassword , bool isEmail
 
@@ -266,13 +266,18 @@ class AccountViewModel extends ChangeNotifier {
       StaticAccount.staticAccount.email=jsonResponse['email'].toString();
       StaticAccount.staticAccount.phoneNumber=jsonResponse['phoneNumber'].toString();
       StaticAccount.staticAccount.photo=base64.decode(jsonResponse['photo'].toString());
-      return true; // Success
-      } else {
-        throw Exception('Failed to update Profile');
+      return 200; // Success
+      } else if (response.statusCode == 409)
+      {
+        return 409;
+      }
+      else
+      {
+        return 500;//Exception('Failed to update Profile');
       }
     } catch (e) {
       print('Error: $e');
-      return false;
+      return 500;
     }
 
 

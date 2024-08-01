@@ -95,7 +95,7 @@ class _CodeResetPasswordState extends State<CodeResetPassword> {
                         SizedBox(height: 10),
                         Center(
                           child: Text(
-                            "Entrer le code de confirmation",
+                            "Enter the confirmation code",
                             style: TextStyle(color: Colors.white, fontSize: 15),
                           ),
                         ),
@@ -136,7 +136,7 @@ class _CodeResetPasswordState extends State<CodeResetPassword> {
                                       controller: _codeController,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Veuillez saisir votre Code .';
+                                          return 'Enter your Code.';
                                         }
                                       },
                                       decoration: InputDecoration(
@@ -161,7 +161,7 @@ class _CodeResetPasswordState extends State<CodeResetPassword> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    'Confirmer',
+                                    'Confirm',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,

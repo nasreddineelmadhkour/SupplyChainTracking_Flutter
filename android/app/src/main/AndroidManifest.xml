@@ -10,7 +10,13 @@
     <application
         android:label="PGS Tracking"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/launcher_icon"
+
+        android:supportsRtl="true"
+        android:allowBackup="true"
+        android:enableOnBackInvokedCallback="true"> <!-- Add this line -->
+
+
 
         <activity
             android:name=".MainActivity"

@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart'; // Import the image_picker package
+import 'package:provider/provider.dart';
 import 'package:supplychaintracking/Models/ImageUpload.dart';
 import 'package:supplychaintracking/Models/StaticAccount.dart';
 import 'package:supplychaintracking/ViewModel/AccountViewModel.dart';
+import 'package:supplychaintracking/Views/LoginView/login.dart';
 import 'package:supplychaintracking/Views/Widgets/colorTheme.dart';
 import 'package:supplychaintracking/Views/Widgets/line_edit.dart';
 import 'package:supplychaintracking/Views/Widgets/password_edit.dart';
@@ -35,7 +37,7 @@ class ProfileState extends State<Profile> {
       passwordController = TextEditingController(text: "");
 
 String name="",email="",phone="",password="";
-
+int status = 0;
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height + 40;
@@ -429,10 +431,13 @@ String name="",email="",phone="",password="";
         this.isPassword.toString()+
       " Email:"+this.isEmail.toString());
 
-    if(await
+    status = await
     accountViewModel.updateProfile(imageUpload,nameController.text,phoneController.text,passwordController.text,emailController.text
-        ,isPhoto,isName,isPhone,isPassword,isEmail))
+        ,isPhoto,isName,isPhone,isPassword,isEmail);
+
+    if(status == 200)
     {
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.teal,
@@ -450,6 +455,39 @@ String name="",email="",phone="",password="";
           ),
         ),
       );
+      if(isPhone)
+        {
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.teal,
+              content: Row(
+                children: [
+                  Icon(
+                    Icons.logout,
+                    size: 30,
+                  ),
+                  Text(
+                    "Logout ... reconnect please .",
+                    style: TextStyle(fontSize: 15),
+                  )
+                ],
+              ),
+            ),
+          );
+          StaticAccount.staticAccount.phoneNumber=phoneController.text;
+          await Future.delayed(Duration(seconds: 3));
+          Provider.of<AccountViewModel>(context,
+              listen: false)
+              .logout();
+          // Navigator.of(context).pop();
+          Navigator.pop(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Login()));
+        }
+
+
       setState(() {
         passwordController.text="";
         emailController.text="";
@@ -465,7 +503,7 @@ String name="",email="",phone="",password="";
 
       });
     }
-    else {
+    else if(status == 409){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red,
@@ -476,7 +514,7 @@ String name="",email="",phone="",password="";
                 size: 30,
               ),
               Text(
-                "Erreur Serveur",
+                "Phone number Or Email already Exist",
                 style: TextStyle(fontSize: 15),
               )
             ],
@@ -484,9 +522,30 @@ String name="",email="",phone="",password="";
         ),
       );
     }
+    else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Row(
+            children: [
+              Icon(
+                Icons.dangerous_rounded,
+                size: 30,
+              ),
+              Text(
+                "Error server ",
+                style: TextStyle(fontSize: 15),
+              )
+            ],
+          ),
+        ),
+      );
+    }
+    }
 
 
-  }
+
+
 
   // Function to select image from gallery or camera
   Future<void> _selectImage() async {
